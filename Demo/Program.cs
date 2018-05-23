@@ -16,7 +16,14 @@ namespace Demo
         public static void Main(string[] args)
         {
             var c = new Wlniao.Aliyun.Mts.Client();
-            var r = c.SubmitJobs(new Wlniao.Aliyun.Mts.Request.SubmitJobsRequest());
+            var r = c.SubmitJobs(new Wlniao.Aliyun.Mts.Request.SubmitJobsRequest()
+            {
+                PipelineId = "62a1f646a44d4060bb3d0260840e68ad",
+                TemplateId = "6deae57592b845928758369313d024da",
+                InputBucket = "daxianghai",
+                InputLocation = "oss-cn-beijing",
+                InputObject= "201805/0521/1j96wsa4vz.mp4"
+            });
             log.Error(r.message);
             var host = new WebHostBuilder()
                 .UseKestrel()

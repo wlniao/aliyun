@@ -65,6 +65,14 @@ namespace Wlniao.Aliyun.Mts
         private void SubmitJobsEncode(Context ctx)
         {
             var req = (Request.SubmitJobsRequest)ctx.Request;
+            if (string.IsNullOrEmpty(req.OutputBucket))
+            {
+                req.OutputBucket = req.InputBucket;
+            }
+            if (string.IsNullOrEmpty(req.OutputLocation))
+            {
+                req.OutputLocation = req.InputLocation;
+            }
             if (string.IsNullOrEmpty(req.OutputObject))
             {
                 req.OutputObject = "%7BObjectPrefix%7D%7BFileName%7D-zm";
@@ -72,7 +80,13 @@ namespace Wlniao.Aliyun.Mts
 
             ctx.Method = System.Net.Http.HttpMethod.Get;
             ctx.Parameters.Add(new KeyValuePair<String, String>("Action", ctx.Operation));
+            ctx.Parameters.Add(new KeyValuePair<String, String>("PipelineId", req.PipelineId));
+            ctx.Parameters.Add(new KeyValuePair<String, String>("Input", Json.ToString(new { Bucket = req.InputBucket, Location = req.InputLocation, Object = req.InputObject })));
             ctx.Parameters.Add(new KeyValuePair<String, String>("OutputBucket", req.OutputBucket));
+            ctx.Parameters.Add(new KeyValuePair<String, String>("OutputLocation", req.OutputLocation));
+            ctx.Parameters.Add(new KeyValuePair<String, String>("Outputs", Newtonsoft.Json.JsonConvert.SerializeObject(new List<Object>(new[] { new { req.TemplateId, req.OutputObject } }))));
+
+
             ComputeSignature(ctx);
 
             #region 生成提交数据
@@ -121,14 +135,14 @@ namespace Wlniao.Aliyun.Mts
                 {
                     if (values.Length > 0)
                     {
-                        values.Append("%26");
+                        values.Append("&");
                     }
-                    values.Append(kv.Key + "%3D" + strUtil.UrlEncode(kv.Value));
+                    values.Append(kv.Key + "=" + strUtil.UrlEncode(kv.Value));
                 }
             }
-            values.Insert(0, ctx.Method.ToString() + "&%2F&");
+            var text = ctx.Method.ToString() + "&%2F&" + strUtil.UrlEncode(values.ToString());
             var hmac = new System.Security.Cryptography.HMACSHA1(System.Text.Encoding.ASCII.GetBytes(ctx.KeySecret + "&"));
-            var hashValue = hmac.ComputeHash(System.Text.Encoding.ASCII.GetBytes(values.ToString()));
+            var hashValue = hmac.ComputeHash(System.Text.Encoding.ASCII.GetBytes(text));
             var signature = System.Convert.ToBase64String(hashValue);
             ctx.Parameters.Add(new KeyValuePair<String, String>("Signature", signature));
         }
