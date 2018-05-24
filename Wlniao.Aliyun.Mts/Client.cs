@@ -40,6 +40,11 @@ namespace Wlniao.Aliyun.Mts
                 if (_AliyunMtsAccessKeyId == null)
                 {
                     _AliyunMtsAccessKeyId = Config.GetSetting("AliyunMtsAccessKeyId");
+                    if (string.IsNullOrEmpty(_AliyunMtsAccessKeyId))
+                    {
+                        //未单独配置Mts服务的密钥时，使用统一配置的阿里云密钥
+                        _AliyunMtsAccessKeyId = AccessKey.KeyId;
+                    }
                 }
                 return _AliyunMtsAccessKeyId;
             }
@@ -54,6 +59,11 @@ namespace Wlniao.Aliyun.Mts
                 if (_AliyunMtsAccessKeySecret == null)
                 {
                     _AliyunMtsAccessKeySecret = Config.GetSetting("AliyunMtsAccessKeySecret");
+                    if (string.IsNullOrEmpty(_AliyunMtsAccessKeySecret))
+                    {
+                        //未单独配置Mts服务的密钥时，使用统一配置的阿里云密钥
+                        _AliyunMtsAccessKeySecret = AccessKey.KeySecret;
+                    }
                 }
                 return _AliyunMtsAccessKeySecret;
             }
@@ -72,8 +82,7 @@ namespace Wlniao.Aliyun.Mts
                 kvList.Add(new KeyValuePair<String, String>("Version", "2014-06-18"));
                 kvList.Add(new KeyValuePair<String, String>("SignatureMethod", "HMAC-SHA1"));
                 kvList.Add(new KeyValuePair<String, String>("SignatureVersion", "1.0"));
-                kvList.Add(new KeyValuePair<String, String>("Timestamp", ""));
-                //kvList.Add(new KeyValuePair<String, String>("AccessKeyId", req.mch_id));
+                kvList.Add(new KeyValuePair<String, String>("Timestamp", DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")));
                 return kvList;
             }
         }
@@ -83,8 +92,8 @@ namespace Wlniao.Aliyun.Mts
         /// </summary>
         public Client()
         {
-            this.KeyId = AccessKey.KeyId;
-            this.KeySecret = AccessKey.KeySecret;
+            this.KeyId = AliyunMtsAccessKeyId;
+            this.KeySecret = AliyunMtsAccessKeySecret;
             this.RegionHost = AliyunMtsRegionHost;
             handler = new Handler();
         }
@@ -205,6 +214,24 @@ namespace Wlniao.Aliyun.Mts
         /// <summary>
         /// 提交转码作业
         /// </summary>
+        public ApiResult<SubmitJobsResponse> SubmitJobs(String PipelineId, String TemplateId, String Bucket, String Location, String InputObject, String OutputObject = null)
+        {
+            var request = new Wlniao.Aliyun.Mts.Request.SubmitJobsRequest()
+            {
+                PipelineId = PipelineId,
+                TemplateId = TemplateId,
+                InputBucket = Bucket,
+                InputLocation = Location,
+                InputObject = InputObject,
+                OutputBucket = Bucket,
+                OutputLocation = Location,
+                OutputObject = OutputObject
+            };
+            return GetResponseFromAsyncTask(SubmitJobsAsync(request));
+        }
+        /// <summary>
+        /// 提交转码作业
+        /// </summary>
         public ApiResult<SubmitJobsResponse> SubmitJobs(SubmitJobsRequest request)
         {
             return GetResponseFromAsyncTask(SubmitJobsAsync(request));
@@ -224,6 +251,46 @@ namespace Wlniao.Aliyun.Mts
                 });
             }
             return CallAsync<SubmitJobsRequest, SubmitJobsResponse>("SubmitJobs", request);
+        }
+        #endregion
+
+        #region SubmitMediaInfoJob 提交媒体信息作业
+        /// <summary>
+        /// 提交媒体信息作业
+        /// </summary>
+        public ApiResult<SubmitMediaInfoJobResponse> SubmitMediaInfoJob( String Bucket, String Location, String InputObject,String UserData = "")
+        {
+            var request = new SubmitMediaInfoJobRequest()
+            {
+                InputBucket = Bucket,
+                InputLocation = Location,
+                InputObject = InputObject,
+                UserData = UserData
+            };
+            return GetResponseFromAsyncTask(SubmitMediaInfoJobAsync(request));
+        }
+        /// <summary>
+        /// 提交媒体信息作业
+        /// </summary>
+        public ApiResult<SubmitMediaInfoJobResponse> SubmitMediaInfoJob(SubmitMediaInfoJobRequest request)
+        {
+            return GetResponseFromAsyncTask(SubmitMediaInfoJobAsync(request));
+        }
+        /// <summary>
+        /// 提交媒体信息作业 的异步形式。
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        public Task<ApiResult<SubmitMediaInfoJobResponse>> SubmitMediaInfoJobAsync(SubmitMediaInfoJobRequest request)
+        {
+            if (request == null)
+            {
+                return Task<ApiResult<SubmitMediaInfoJobResponse>>.Run(() =>
+                {
+                    return new ApiResult<SubmitMediaInfoJobResponse>() { message = "require parameters" };
+                });
+            }
+            return CallAsync<SubmitMediaInfoJobRequest, SubmitMediaInfoJobResponse>("SubmitMediaInfoJob", request);
         }
         #endregion
     }

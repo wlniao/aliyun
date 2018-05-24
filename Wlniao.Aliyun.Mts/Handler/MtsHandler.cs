@@ -21,9 +21,11 @@ namespace Wlniao.Aliyun.Mts
         {
             EncoderMap = new Dictionary<string, ResponseEncoder>() {
                 { "SubmitJobs", SubmitJobsEncode },
+                { "SubmitMediaInfoJob", SubmitMediaInfoJobEncode },
             };
             DecoderMap = new Dictionary<string, ResponseDecoder>() {
                 { "SubmitJobs", SubmitJobsDecode },
+                { "SubmitMediaInfoJob", SubmitMediaInfoJobDecode },
             };
         }
 
@@ -75,7 +77,7 @@ namespace Wlniao.Aliyun.Mts
             }
             if (string.IsNullOrEmpty(req.OutputObject))
             {
-                req.OutputObject = "%7BObjectPrefix%7D%7BFileName%7D-zm";
+                req.OutputObject = "%7BObjectPrefix%7D%7BFileName%7D-zm{ExtName}";
             }
 
             ctx.Method = System.Net.Http.HttpMethod.Get;
@@ -107,11 +109,53 @@ namespace Wlniao.Aliyun.Mts
         }
         private void SubmitJobsDecode(Context ctx)
         {
-            if (ctx.HttpResponseBody.Length > 0)
+            try
             {
-                ctx.Response = new Response.SubmitJobsResponse() { image = ctx.HttpResponseBody };
+                ctx.Response = Newtonsoft.Json.JsonConvert.DeserializeObject<Response.SubmitJobsResponse>(ctx.HttpResponseString);
             }
-            else
+            catch
+            {
+                ctx.Response = new Error() { errmsg = "InvalidJsonString" };
+            }
+        }
+        #endregion
+
+        #region SubmitMediaInfoJob
+        private void SubmitMediaInfoJobEncode(Context ctx)
+        {
+            var req = (Request.SubmitMediaInfoJobRequest)ctx.Request;
+
+            ctx.Method = System.Net.Http.HttpMethod.Get;
+            ctx.Parameters.Add(new KeyValuePair<String, String>("Action", ctx.Operation));
+            ctx.Parameters.Add(new KeyValuePair<String, String>("Input", Json.ToString(new Models.Input { Bucket = req.InputBucket, Location = req.InputLocation, Object = req.InputObject })));
+            ctx.Parameters.Add(new KeyValuePair<String, String>("UserData", req.UserData));
+
+
+            ComputeSignature(ctx);
+
+            #region 生成提交数据
+            var sb = new System.Text.StringBuilder();
+            foreach (var kv in ctx.Parameters)
+            {
+                if (!string.IsNullOrEmpty(kv.Value))
+                {
+                    if (sb.Length > 0)
+                    {
+                        sb.Append("&");
+                    }
+                    sb.Append(kv.Key + "=" + strUtil.UrlEncode(kv.Value));
+                }
+            }
+            ctx.HttpRequestString = sb.ToString();
+            #endregion
+        }
+        private void SubmitMediaInfoJobDecode(Context ctx)
+        {
+            try
+            {
+                ctx.Response = Newtonsoft.Json.JsonConvert.DeserializeObject<Response.SubmitMediaInfoJobResponse>(ctx.HttpResponseString);
+            }
+            catch
             {
                 ctx.Response = new Error() { errmsg = "InvalidJsonString" };
             }
