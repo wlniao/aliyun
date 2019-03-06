@@ -11,11 +11,11 @@ namespace Wlniao.Aliyun
     public class Client : Wlniao.Handler.IClient
     {
         /// <summary>
-        /// 小程序ID
+        /// 阿里云AccessKeyId
         /// </summary>
         public string KeyId { get; set; }
         /// <summary>
-        /// 小程序密钥
+        /// 阿里云AccessKeySecret
         /// </summary>
         public string KeySecret { get; set; }
         /// <summary>
@@ -45,8 +45,16 @@ namespace Wlniao.Aliyun
             handler = new Handler();
         }
 
-
-        private Task<ApiResult<TResponse>> CallAsync<TRequest, TResponse>(string operation, TRequest request, System.Net.Http.HttpMethod method)
+        /// <summary>
+        /// 异步获取API接口输出
+        /// </summary>
+        /// <typeparam name="TRequest"></typeparam>
+        /// <typeparam name="TResponse"></typeparam>
+        /// <param name="operation"></param>
+        /// <param name="request"></param>
+        /// <param name="method"></param>
+        /// <returns></returns>
+        protected Task<ApiResult<TResponse>> CallAsync<TRequest, TResponse>(string operation, TRequest request, System.Net.Http.HttpMethod method)
             where TResponse : Wlniao.Handler.IResponse, new()
             where TRequest : Wlniao.Handler.IRequest
         {
@@ -95,7 +103,13 @@ namespace Wlniao.Aliyun
                 }
             }
         }
-        private TResponse GetResponseFromAsyncTask<TResponse>(Task<TResponse> task)
+        /// <summary>
+        /// 同步获取API接口输出
+        /// </summary>
+        /// <typeparam name="TResponse"></typeparam>
+        /// <param name="task"></param>
+        /// <returns></returns>
+        protected TResponse GetResponseFromAsyncTask<TResponse>(Task<TResponse> task)
         {
             try
             {
@@ -106,7 +120,6 @@ namespace Wlniao.Aliyun
                 log.Error(e.Message);
                 throw e.GetBaseException();
             }
-
             return task.Result;
         }
 

@@ -35,6 +35,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Wlniao.XCore" Version="2.1.5" />
+    <PackageReference Include="Wlniao.XCore" Version="2.1.13" />
   </ItemGroup>
 </Project>

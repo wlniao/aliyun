@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>TableStore Extend by Wlniao</Description>
+    <Copyright>Copyright 2019 XieChaoyi</Copyright>
+    <VersionPrefix>1.6.5</VersionPrefix>
+    <Authors>Wlniao</Authors>
+    <RuntimeFrameworkVersion>2.0.0</RuntimeFrameworkVersion>
+    <TargetFrameworks>netcoreapp2.0</TargetFrameworks>
+    <AssemblyName>Wlniao.Aliyun.TableStore</AssemblyName>
+    <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">2.0.0</NetStandardImplicitPackageVersion>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <PackageId>Wlniao.Aliyun.TableStore</PackageId>
+    <Version>0.0.1</Version>
+    <RootNamespace>Wlniao.Aliyun.TableStore</RootNamespace>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0.html</PackageLicenseUrl>
+    <PackageIconUrl>https://static.wlniao.com/wlniao/logo.png</PackageIconUrl>
+    <PackageProjectUrl>https://www.wlniao.com/xcore/mongo</PackageProjectUrl>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp2.0|AnyCPU'">
+    <DocumentationFile>bin\Debug\netcoreapp2.0\Wlniao.XCore.MongoDB.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp2.0|AnyCPU'">
+    <DocumentationFile>bin\Release\netcoreapp2.0\Wlniao.XCore.MongoDB.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Wlniao.XCore" Version="2.1.13" />
+    <PackageReference Include="Aliyun.TableStore" Version="1.1.0" />
+  </ItemGroup>
+</Project>
