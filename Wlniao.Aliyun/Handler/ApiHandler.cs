@@ -103,15 +103,10 @@ namespace Wlniao.Aliyun
                     }
                 }
             }
-            else if (status == 404 || status == 502)
+            else
             {
                 throw new Exception(status + ":" + responseMessage.ReasonPhrase);
             }
-            else
-            {
-                _ctx.HttpResponseString = "{errcode:" + status + ",errmsg:\"" + responseMessage.ReasonPhrase + "\"}";
-            }
         }
-
     }
 }

@@ -77,10 +77,10 @@ namespace Wlniao.Aliyun.TableStore
         protected static void OnConfiguring(String instanceName, String accessKeyID, String accessKeySecret, String regionId)
         {
             var watch = Stopwatch.StartNew();
-            var config = new OTSClientConfig("https://" + instanceName + "." + regionId + ".ots.aliyuncs.com", accessKeyID, accessKeySecret, instanceName);
+            OtsConfig = new OTSClientConfig("https://" + instanceName + "." + regionId + ".ots.aliyuncs.com", accessKeyID, accessKeySecret, instanceName);
             try
             {
-                var client = new OTSClient(config);
+                var client = new OTSClient(OtsConfig);
                 var resListTable = client.ListTable(new ListTableRequest());
                 foreach (var table in resListTable.TableNames)
                 {
@@ -90,24 +90,30 @@ namespace Wlniao.Aliyun.TableStore
                         tableKey.Add(table, resDescribeTable.TableMeta.PrimaryKeySchema);
                     }
                 }
-                OtsConfig = config;
                 OtsConfig.OTSDebugLogHandler = null;
                 OtsConfig.OTSErrorLogHandler = null;
                 watch.Stop();
                 Console.WriteLine("Ots Init: " + watch.Elapsed);
                 #region 尝试使用内网链接地址
-                System.Threading.Tasks.Task.Run(() => {
-                    try
+                try
+                {
+#if !DEBUG
+                    System.Threading.Tasks.Task.Run(() =>
                     {
                         var tmp = new OTSClientConfig("https://" + instanceName + "." + regionId + ".ots-internal.aliyuncs.com", accessKeyID, accessKeySecret, instanceName);
                         var tmpListTable = new OTSClient(tmp).ListTable(new ListTableRequest());
-                        OtsConfig = tmp;
-                        OtsConfig.OTSDebugLogHandler = null;
-                        OtsConfig.OTSErrorLogHandler = null;
-                    }
-                    catch { }
-                });
-                #endregion
+                        foreach (var table in tmpListTable.TableNames)
+                        {
+                            OtsConfig = tmp;
+                            OtsConfig.OTSDebugLogHandler = null;
+                            OtsConfig.OTSErrorLogHandler = null;
+                            return;
+                        }
+                    });
+#endif
+                }
+                catch { }
+#endregion
             }
             catch (Exception ex)
             {
@@ -122,7 +128,7 @@ namespace Wlniao.Aliyun.TableStore
         /// <param name="type"></param>
         protected static string SetTable(Type type)
         {
-            #region 初始化缓存
+#region 初始化缓存
             if (!tableNames.ContainsKey(type))
             {
                 foreach (var attr in type.CustomAttributes)
@@ -134,11 +140,11 @@ namespace Wlniao.Aliyun.TableStore
                     }
                 }
             }
-            #endregion
+#endregion
 
             var name = tableNames.ContainsKey(type) ? tableNames[type] : type.Name.ToLower();
 
-            #region 分析表结构
+#region 分析表结构
             var pkSchema = new PrimaryKeySchema();
             foreach (PropertyInfo info in rft.GetPropertyList(type))
             {
@@ -163,12 +169,12 @@ namespace Wlniao.Aliyun.TableStore
                     throw new Exception("不支持当前类型的主键");
                 }
             };
-            #endregion
+#endregion
 
-            #region 生成表结构
+#region 生成表结构
             if (tableKey.ContainsKey(name))
             {
-                #region 对比已有结构
+#region 对比已有结构
                 tableKey[name].ForEach(key =>
                 {
                     pkSchema.ForEach(tmp =>
@@ -180,11 +186,11 @@ namespace Wlniao.Aliyun.TableStore
                         }
                     });
                 });
-                #endregion
+#endregion
             }
             else
             {
-                #region 创建新表
+#region 创建新表
                 //通过表名和主键列的schema创建一个tableMeta
                 var client = new OTSClient(OtsConfig);
                 var tableMeta = new TableMeta(name, pkSchema);
@@ -236,9 +242,9 @@ namespace Wlniao.Aliyun.TableStore
                 {
                     Console.WriteLine("Create table failed, exception:{0}", ex.Message);
                 }
-                #endregion
+#endregion
             }
-            #endregion
+#endregion
 
             return name;
         }
@@ -249,7 +255,7 @@ namespace Wlniao.Aliyun.TableStore
         /// <param name="type"></param>
         protected static void DelTable(Type type)
         {
-            #region 初始化缓存
+#region 初始化缓存
             if (!tableNames.ContainsKey(type))
             {
                 foreach (var attr in type.CustomAttributes)
@@ -261,10 +267,10 @@ namespace Wlniao.Aliyun.TableStore
                     }
                 }
             }
-            #endregion
+#endregion
 
             var name = tableNames.ContainsKey(type) ? tableNames[type] : type.Name.ToLower();
-            #region 删除已有表
+#region 删除已有表
             try
             {
                 var request = new DeleteTableRequest(name);
@@ -276,7 +282,7 @@ namespace Wlniao.Aliyun.TableStore
             {
                 Console.WriteLine("Delete table failed, exception:{0}", ex.Message);
             }
-            #endregion
+#endregion
         }
 
 
@@ -319,7 +325,7 @@ namespace Wlniao.Aliyun.TableStore
                 }
                 if (info.GetCustomAttribute(typeof(System.ComponentModel.DataAnnotations.KeyAttribute)) == null)
                 {
-                    #region 属性列处理
+#region 属性列处理
                     var propertyValue = info.GetValue(obj, null);
                     if (propertyValue == null)
                     {
@@ -353,11 +359,11 @@ namespace Wlniao.Aliyun.TableStore
                     {
                         columns.Add(info.Name, new ColumnValue((byte[])propertyValue));
                     }
-                    #endregion
+#endregion
                 }
                 else
                 {
-                    #region 主键字段处理
+#region 主键字段处理
                     var propertyValue = info.GetValue(obj, null);
                     if (propertyValue == null)
                     {
@@ -375,7 +381,7 @@ namespace Wlniao.Aliyun.TableStore
                     {
                         keys.Add(info.Name, new ColumnValue((byte[])propertyValue));
                     }
-                    #endregion
+#endregion
                 }
             }
 
@@ -403,7 +409,7 @@ namespace Wlniao.Aliyun.TableStore
                 }
                 if (info.GetCustomAttribute(typeof(System.ComponentModel.DataAnnotations.KeyAttribute)) == null)
                 {
-                    #region 属性列处理
+#region 属性列处理
                     var propertyValue = info.GetValue(obj, null);
                     if (propertyValue == null)
                     {
@@ -437,11 +443,11 @@ namespace Wlniao.Aliyun.TableStore
                     {
                         columns.Add(info.Name, new ColumnValue((byte[])propertyValue));
                     }
-                    #endregion
+#endregion
                 }
                 else
                 {
-                    #region 主键字段处理
+#region 主键字段处理
                     var propertyValue = info.GetValue(obj, null);
                     if (propertyValue == null)
                     {
@@ -459,7 +465,7 @@ namespace Wlniao.Aliyun.TableStore
                     {
                         keys.Add(info.Name, new ColumnValue((byte[])propertyValue));
                     }
-                    #endregion
+#endregion
                 }
             }
 
@@ -486,7 +492,7 @@ namespace Wlniao.Aliyun.TableStore
                 }
                 if (info.GetCustomAttribute(typeof(System.ComponentModel.DataAnnotations.KeyAttribute)) == null)
                 {
-                    #region 属性列处理
+#region 属性列处理
                     var propertyValue = info.GetValue(obj, null);
                     if (propertyValue == null)
                     {
@@ -520,11 +526,11 @@ namespace Wlniao.Aliyun.TableStore
                     {
                         columns.AddAttributeColumnToPut(info.Name, new ColumnValue((byte[])propertyValue));
                     }
-                    #endregion
+#endregion
                 }
                 else
                 {
-                    #region 主键字段处理
+#region 主键字段处理
                     var propertyValue = info.GetValue(obj, null);
                     if (propertyValue == null)
                     {
@@ -542,7 +548,7 @@ namespace Wlniao.Aliyun.TableStore
                     {
                         keys.Add(info.Name, new ColumnValue((byte[])propertyValue));
                     }
-                    #endregion
+#endregion
                 }
             }
 

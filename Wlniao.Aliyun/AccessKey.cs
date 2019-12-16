@@ -8,7 +8,7 @@
         private static string _KeyId = null;
         private static string _KeySecret = null;
         /// <summary>
-        /// Access Key Id
+        /// 【WLN_ALIYUN_KEYID】Access Key Id
         /// </summary>
         public static string KeyId
         {
@@ -26,7 +26,7 @@
             }
         }
         /// <summary>
-        /// Access Key Secret
+        /// 【WLN_ALIYUN_KEYSECRET】Access Key Secret
         /// </summary>
         public static string KeySecret
         {

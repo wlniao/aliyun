@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Wlniao.Handler;
@@ -81,12 +82,12 @@ namespace Wlniao.Aliyun.Mts
             }
 
             ctx.Method = System.Net.Http.HttpMethod.Get;
-            ctx.Parameters.Add(new KeyValuePair<String, String>("Action", ctx.Operation));
-            ctx.Parameters.Add(new KeyValuePair<String, String>("PipelineId", req.PipelineId));
-            ctx.Parameters.Add(new KeyValuePair<String, String>("Input", Json.ToString(new { Bucket = req.InputBucket, Location = req.InputLocation, Object = req.InputObject })));
-            ctx.Parameters.Add(new KeyValuePair<String, String>("OutputBucket", req.OutputBucket));
-            ctx.Parameters.Add(new KeyValuePair<String, String>("OutputLocation", req.OutputLocation));
-            ctx.Parameters.Add(new KeyValuePair<String, String>("Outputs", Newtonsoft.Json.JsonConvert.SerializeObject(new List<Object>(new[] { new { req.TemplateId, req.OutputObject } }))));
+            ctx.Parameters.TryAdd("Action", ctx.Operation);
+            ctx.Parameters.TryAdd("PipelineId", req.PipelineId);
+            ctx.Parameters.TryAdd("Input", Json.ToString(new { Bucket = req.InputBucket, Location = req.InputLocation, Object = req.InputObject }));
+            ctx.Parameters.TryAdd("OutputBucket", req.OutputBucket);
+            ctx.Parameters.TryAdd("OutputLocation", req.OutputLocation);
+            ctx.Parameters.TryAdd("Outputs", JsonConvert.SerializeObject(new List<Object>(new[] { new { req.TemplateId, req.OutputObject } })));
 
 
             ComputeSignature(ctx);
@@ -126,9 +127,9 @@ namespace Wlniao.Aliyun.Mts
             var req = (Request.SubmitMediaInfoJobRequest)ctx.Request;
 
             ctx.Method = System.Net.Http.HttpMethod.Get;
-            ctx.Parameters.Add(new KeyValuePair<String, String>("Action", ctx.Operation));
-            ctx.Parameters.Add(new KeyValuePair<String, String>("Input", Json.ToString(new Models.Input { Bucket = req.InputBucket, Location = req.InputLocation, Object = req.InputObject })));
-            ctx.Parameters.Add(new KeyValuePair<String, String>("UserData", req.UserData));
+            ctx.Parameters.TryAdd("Action", ctx.Operation);
+            ctx.Parameters.TryAdd("Input", Json.ToString(new Models.Input { Bucket = req.InputBucket, Location = req.InputLocation, Object = req.InputObject }));
+            ctx.Parameters.TryAdd("UserData", req.UserData);
 
 
             ComputeSignature(ctx);
@@ -171,24 +172,25 @@ namespace Wlniao.Aliyun.Mts
         /// <returns></returns>
         private void ComputeSignature(Context ctx)
         {
-            ctx.Parameters.Sort(delegate (KeyValuePair<String, String> small, KeyValuePair<String, String> big) { return small.Key.CompareTo(big.Key); });
+            var keys = ctx.Parameters.Keys.ToList();
             var values = new System.Text.StringBuilder();
-            foreach (var kv in ctx.Parameters)
+            keys.Sort(delegate (String small, String big) { return string.Compare(small, big, StringComparison.Ordinal); });
+            foreach (var key in keys)
             {
-                if (!string.IsNullOrEmpty(kv.Value))
+                if (!string.IsNullOrEmpty(ctx.Parameters[key]))
                 {
                     if (values.Length > 0)
                     {
                         values.Append("&");
                     }
-                    values.Append(kv.Key + "=" + strUtil.UrlEncode(kv.Value));
+                    values.Append(key + "=" + strUtil.UrlEncode(ctx.Parameters[key]));
                 }
             }
             var text = ctx.Method.ToString() + "&%2F&" + strUtil.UrlEncode(values.ToString());
             var hmac = new System.Security.Cryptography.HMACSHA1(System.Text.Encoding.ASCII.GetBytes(ctx.KeySecret + "&"));
             var hashValue = hmac.ComputeHash(System.Text.Encoding.ASCII.GetBytes(text));
             var signature = System.Convert.ToBase64String(hashValue);
-            ctx.Parameters.Add(new KeyValuePair<String, String>("Signature", signature));
+            ctx.Parameters.TryAdd("Signature", signature);
         }
     }
 }

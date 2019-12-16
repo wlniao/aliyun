@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Wlniao.Aliyun
@@ -123,5 +124,376 @@ namespace Wlniao.Aliyun
             return task.Result;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ApiHost"></param>
+        /// <param name="ApiPath"></param>
+        /// <param name="kvs"></param>
+        /// <returns></returns>
+        public ApiResult<String> PublicGet(String ApiHost, String ApiPath, params KeyValuePair<String, String>[] kvs)
+        {
+            var rlt = new ApiResult<String> { message = "未知错误" };
+            if (string.IsNullOrEmpty(this.KeyId))
+            {
+                rlt.message = "阿里云AccessKeyId未设置";
+            }
+            else if (string.IsNullOrEmpty(this.KeySecret))
+            {
+                rlt.message = "阿里云AliyunKeySecret未设置";
+            }
+            else
+            {
+                var ctx = new Context();
+                ctx.KeyId = KeyId;
+                ctx.KeySecret = KeySecret;
+                ctx.RequestHost = ApiHost;
+                ctx.RequestPath = ApiPath;
+                ctx.Retry = int.MaxValue;
+                ctx.Method = System.Net.Http.HttpMethod.Get;
+                ctx.Parameters = new Dictionary<String, String>();
+                if (kvs != null)
+                {
+                    foreach (var kv in kvs)
+                    {
+                        ctx.Parameters.Add(kv.Key, kv.Value);
+                    }
+                }
+
+                ctx.Parameters.TryAdd("Format", "JSON");
+                ctx.Parameters.TryAdd("AccessKeyId", ctx.KeyId);
+                ctx.Parameters.TryAdd("Timestamp", DateTools.FormatUtc("yyyy-MM-dd'T'HH:mm:ss'Z'"));
+                ctx.Parameters.TryAdd("SignatureMethod", "HMAC-SHA1");
+                ctx.Parameters.TryAdd("SignatureVersion", "1.0");
+                ctx.Parameters.TryAdd("SignatureNonce", Guid.NewGuid().ToString());
+                ComputeSignature(ctx);
+
+                #region 生成提交数据
+                var sb = new System.Text.StringBuilder();
+                foreach (var kv in ctx.Parameters)
+                {
+                    if (!string.IsNullOrEmpty(kv.Value))
+                    {
+                        if (sb.Length > 0)
+                        {
+                            sb.Append("&");
+                        }
+                        sb.Append(kv.Key + "=" + strUtil.UrlEncode(kv.Value));
+                    }
+                }
+                ctx.HttpRequestString = sb.ToString();
+                #endregion
+
+                try
+                {
+                    handler.HandleBefore(ctx);
+                    handler.HandleAfter(ctx);
+                }
+                catch
+                {
+                    try
+                    {
+                        var err = Newtonsoft.Json.JsonConvert.DeserializeObject<Error>(ctx.HttpResponseString);
+                        rlt.code = err.errcode;
+                        rlt.message = err.errmsg;
+                    }
+                    catch
+                    {
+                        rlt.message = "InvalidJsonString";
+                    }
+                }
+            }
+            return rlt;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ApiHost"></param>
+        /// <param name="ApiPath"></param>
+        /// <param name="kvs"></param>
+        /// <returns></returns>
+        public ApiResult<String> PublicPost(String ApiHost, String ApiPath, params KeyValuePair<String, String>[] kvs)
+        {
+            var rlt = new ApiResult<String> { message = "未知错误" };
+            if (string.IsNullOrEmpty(this.KeyId))
+            {
+                rlt.message = "阿里云AccessKeyId未设置";
+            }
+            else if (string.IsNullOrEmpty(this.KeySecret))
+            {
+                rlt.message = "阿里云AliyunKeySecret未设置";
+            }
+            else
+            {
+                var ctx = new Context();
+                ctx.KeyId = KeyId;
+                ctx.KeySecret = KeySecret;
+                ctx.RequestHost = ApiHost;
+                ctx.RequestPath = ApiPath;
+                ctx.Retry = int.MaxValue;
+                ctx.Method = System.Net.Http.HttpMethod.Post;
+                ctx.Parameters = new Dictionary<String, String>();
+                if (kvs != null)
+                {
+                    foreach (var kv in kvs)
+                    {
+                        ctx.Parameters.Add(kv.Key, kv.Value);
+                    }
+                }
+
+                ctx.Parameters.TryAdd("Format", "JSON");
+                ctx.Parameters.TryAdd("AccessKeyId", ctx.KeyId);
+                ctx.Parameters.TryAdd("Timestamp", DateTools.FormatUtc("yyyy-MM-dd'T'HH:mm:ss'Z'"));
+                ctx.Parameters.TryAdd("SignatureMethod", "HMAC-SHA1");
+                ctx.Parameters.TryAdd("SignatureVersion", "1.0");
+                ctx.Parameters.TryAdd("SignatureNonce", Guid.NewGuid().ToString());
+                ComputeSignature(ctx);
+
+                #region 生成提交数据
+                var sb = new System.Text.StringBuilder();
+                foreach (var kv in ctx.Parameters)
+                {
+                    if (!string.IsNullOrEmpty(kv.Value))
+                    {
+                        if (sb.Length > 0)
+                        {
+                            sb.Append("&");
+                        }
+                        sb.Append(kv.Key + "=" + strUtil.UrlEncode(kv.Value));
+                    }
+                }
+                ctx.HttpRequestString = sb.ToString();
+                #endregion
+
+                try
+                {
+                    handler.HandleBefore(ctx);
+                    handler.HandleAfter(ctx);
+                }
+                catch
+                {
+                    try
+                    {
+                        var err = Newtonsoft.Json.JsonConvert.DeserializeObject<Error>(ctx.HttpResponseString);
+                        rlt.code = err.errcode;
+                        rlt.message = err.errmsg;
+                    }
+                    catch
+                    {
+                        rlt.message = "InvalidJsonString";
+                    }
+                }
+            }
+            return rlt;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ApiHost"></param>
+        /// <param name="ApiPath"></param>
+        /// <param name="Content"></param>
+        /// <param name="kvs"></param>
+        /// <returns></returns>
+        public ApiResult<String> PublicPost(String ApiHost, String ApiPath, String Content, params KeyValuePair<String, String>[] kvs)
+        {
+            var rlt = new ApiResult<String> { message = "未知错误" };
+            if (string.IsNullOrEmpty(this.KeyId))
+            {
+                rlt.message = "阿里云AccessKeyId未设置";
+            }
+            else if (string.IsNullOrEmpty(this.KeySecret))
+            {
+                rlt.message = "阿里云AliyunKeySecret未设置";
+            }
+            else
+            {
+                var ctx = new Context();
+                ctx.KeyId = KeyId;
+                ctx.KeySecret = KeySecret;
+                ctx.RequestHost = ApiHost;
+                ctx.RequestPath = ApiPath;
+                ctx.Retry = int.MaxValue;
+                ctx.Method = System.Net.Http.HttpMethod.Post;
+                ctx.Parameters = new Dictionary<String, String>();
+                if (kvs != null)
+                {
+                    foreach (var kv in kvs)
+                    {
+                        ctx.Parameters.Add(kv.Key, kv.Value);
+                    }
+                }
+
+                ctx.Parameters.TryAdd("Format", "JSON");
+                ctx.Parameters.TryAdd("AccessKeyId", ctx.KeyId);
+                ctx.Parameters.TryAdd("Timestamp", DateTools.FormatUtc("yyyy-MM-dd'T'HH:mm:ss'Z'"));
+                ctx.Parameters.TryAdd("SignatureMethod", "HMAC-SHA1");
+                ctx.Parameters.TryAdd("SignatureVersion", "1.0");
+                ctx.Parameters.TryAdd("SignatureNonce", Guid.NewGuid().ToString());
+                ComputeSignature(ctx);
+
+                #region 生成提交数据
+                var sb = new System.Text.StringBuilder();
+                foreach (var kv in ctx.Parameters)
+                {
+                    if (!string.IsNullOrEmpty(kv.Value))
+                    {
+                        if (sb.Length > 0)
+                        {
+                            sb.Append("&");
+                        }
+                        sb.Append(kv.Key + "=" + strUtil.UrlEncode(kv.Value));
+                    }
+                }
+                if (ctx.RequestPath.IndexOf('?') > 0)
+                {
+                    ctx.RequestPath += "&" + sb.ToString();
+                }
+                else
+                {
+                    ctx.RequestPath += "?" + sb.ToString();
+                }
+                ctx.HttpRequestString = Content;
+                #endregion
+
+                try
+                {
+                    handler.HandleBefore(ctx);
+                    handler.HandleAfter(ctx);
+                }
+                catch
+                {
+                    try
+                    {
+                        var err = Newtonsoft.Json.JsonConvert.DeserializeObject<Error>(ctx.HttpResponseString);
+                        rlt.code = err.errcode;
+                        rlt.message = err.errmsg;
+                    }
+                    catch
+                    {
+                        rlt.message = "InvalidJsonString";
+                    }
+                }
+            }
+            return rlt;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ApiHost"></param>
+        /// <param name="ApiPath"></param>
+        /// <param name="Content"></param>
+        /// <param name="kvs"></param>
+        /// <returns></returns>
+        public ApiResult<String> PublicPost(String ApiHost, String ApiPath, byte[] Content, params KeyValuePair<String, String>[] kvs)
+        {
+            var rlt = new ApiResult<String> { message = "未知错误" };
+            if (string.IsNullOrEmpty(this.KeyId))
+            {
+                rlt.message = "阿里云AccessKeyId未设置";
+            }
+            else if (string.IsNullOrEmpty(this.KeySecret))
+            {
+                rlt.message = "阿里云AliyunKeySecret未设置";
+            }
+            else
+            {
+                var ctx = new Context();
+                ctx.KeyId = KeyId;
+                ctx.KeySecret = KeySecret;
+                ctx.RequestHost = ApiHost;
+                ctx.RequestPath = ApiPath;
+                ctx.Retry = int.MaxValue;
+                ctx.Method = System.Net.Http.HttpMethod.Post;
+                ctx.Parameters = new Dictionary<String, String>();
+                if (kvs != null)
+                {
+                    foreach (var kv in kvs)
+                    {
+                        ctx.Parameters.Add(kv.Key, kv.Value);
+                    }
+                }
+
+                ctx.Parameters.TryAdd("Format", "JSON");
+                ctx.Parameters.TryAdd("AccessKeyId", ctx.KeyId);
+                ctx.Parameters.TryAdd("Timestamp", DateTools.FormatUtc("yyyy-MM-dd'T'HH:mm:ss'Z'"));
+                ctx.Parameters.TryAdd("SignatureMethod", "HMAC-SHA1");
+                ctx.Parameters.TryAdd("SignatureVersion", "1.0");
+                ctx.Parameters.TryAdd("SignatureNonce", Guid.NewGuid().ToString());
+                ComputeSignature(ctx);
+
+                #region 生成提交数据
+                var sb = new System.Text.StringBuilder();
+                foreach (var kv in ctx.Parameters)
+                {
+                    if (!string.IsNullOrEmpty(kv.Value))
+                    {
+                        if (sb.Length > 0)
+                        {
+                            sb.Append("&");
+                        }
+                        sb.Append(kv.Key + "=" + strUtil.UrlEncode(kv.Value));
+                    }
+                }
+                if (ctx.RequestPath.IndexOf('?') > 0)
+                {
+                    ctx.RequestPath += "&" + sb.ToString();
+                }
+                else
+                {
+                    ctx.RequestPath += "?" + sb.ToString();
+                }
+                ctx.HttpRequestBody = Content;
+                #endregion
+
+                try
+                {
+                    handler.HandleBefore(ctx);
+                    handler.HandleAfter(ctx);
+                }
+                catch
+                {
+                    try
+                    {
+                        var err = Newtonsoft.Json.JsonConvert.DeserializeObject<Error>(ctx.HttpResponseString);
+                        rlt.code = err.errcode;
+                        rlt.message = err.errmsg;
+                    }
+                    catch
+                    {
+                        rlt.message = "InvalidJsonString";
+                    }
+                }
+            }
+            return rlt;
+        }
+
+
+        /// <summary>
+        /// 计算签名
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <returns></returns>
+        private void ComputeSignature(Context ctx)
+        {
+            var keys = ctx.Parameters.Keys.ToList();
+            var values = new System.Text.StringBuilder();
+            keys.Sort(delegate (String small, String big) { return string.Compare(small, big, StringComparison.Ordinal); });
+            foreach (var key in keys)
+            {
+                if (!string.IsNullOrEmpty(ctx.Parameters[key]))
+                {
+                    if (values.Length > 0)
+                    {
+                        values.Append("&");
+                    }
+                    values.Append(key + "=" + strUtil.UrlEncode(ctx.Parameters[key]));
+                }
+            }
+            var text = ctx.Method.ToString() + "&%2F&" + strUtil.UrlEncode(values.ToString());
+            var hmac = new System.Security.Cryptography.HMACSHA1(System.Text.Encoding.ASCII.GetBytes(ctx.KeySecret + "&"));
+            var hashValue = hmac.ComputeHash(System.Text.Encoding.ASCII.GetBytes(text));
+            var signature = System.Convert.ToBase64String(hashValue);
+            ctx.Parameters.Add("Signature", signature);
+        }
     }
 }

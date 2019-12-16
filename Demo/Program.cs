@@ -15,14 +15,30 @@ namespace Demo
     {
         public static void Main(string[] args)
         {
-            var c = new Wlniao.Aliyun.Mts.Client();
+            var c = new Wlniao.Aliyun.Client("LTAI4FrcTR9ZBrH8Ysr9NZv9", "jabNU3bYi4z4hjwCOSkIRufctvQoZB");
             //var r = c.SubmitJobs("62a1f646a44d4060bb3d0260840e68ad", "6deae57592b845928758369313d024da", "daxianghai", "oss-cn-beijing", "asset/test.mp4");
-            var r = c.SubmitMediaInfoJob("daxianghai", "oss-cn-beijing", "asset/test-zm.mp4");
-            if (r.data.FirstIsH264())
+            //var r = c.SubmitMediaInfoJob("daxianghai", "oss-cn-beijing", "asset/test-zm.mp4");
+            //if (r.data.FirstIsH264())
+            //{
+
+            //}
+            //log.Error(r.message);
+
+            var kvs = new List<KeyValuePair<String, String>>();
+            kvs.Add(new KeyValuePair<string, string>("Version", "2015-01-09"));
+            kvs.Add(new KeyValuePair<string, string>("Action", "AddDomainRecord"));
+            kvs.Add(new KeyValuePair<string, string>("DomainName", "wlniao.net"));
+            kvs.Add(new KeyValuePair<string, string>("RR", "ddns"));
+            kvs.Add(new KeyValuePair<string, string>("Type", "A"));
+            kvs.Add(new KeyValuePair<string, string>("Value", "127.0.0.1"));
+            kvs.Add(new KeyValuePair<string, string>("Line", "default"));
+            kvs.Add(new KeyValuePair<string, string>("Priority", "10"));
+            kvs.Add(new KeyValuePair<string, string>("TTL", "600"));
+            var test = c.PublicGet("https://alidns.aliyuncs.com", "/", kvs.ToArray());
+            if (test.success)
             {
 
             }
-            log.Error(r.message);
             var host = new WebHostBuilder()
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())

@@ -73,16 +73,16 @@ namespace Wlniao.Aliyun.Mts
         /// <summary>
         /// 基础参数
         /// </summary>
-        public List<KeyValuePair<String, String>> PublicParameters
+        public Dictionary<String, String> PublicParameters
         {
             get
             {
-                var kvList = new List<KeyValuePair<String, String>>();
-                kvList.Add(new KeyValuePair<String, String>("Format", "JSON"));
-                kvList.Add(new KeyValuePair<String, String>("Version", "2014-06-18"));
-                kvList.Add(new KeyValuePair<String, String>("SignatureMethod", "HMAC-SHA1"));
-                kvList.Add(new KeyValuePair<String, String>("SignatureVersion", "1.0"));
-                kvList.Add(new KeyValuePair<String, String>("Timestamp", DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")));
+                var kvList = new Dictionary<String, String>();
+                kvList.Add("Format", "JSON");
+                kvList.Add("Version", "2015-01-09");
+                kvList.Add("SignatureMethod", "HMAC-SHA1");
+                kvList.Add("SignatureVersion", "1.0");
+                kvList.Add("Timestamp", DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"));
                 return kvList;
             }
         }
@@ -165,8 +165,8 @@ namespace Wlniao.Aliyun.Mts
             ctx.RequestPath = "/";  //媒体服务请求路径默认为“/”
             ctx.Operation = operation;
             ctx.Request = request;
-            ctx.Parameters.Add(new KeyValuePair<String, String>("AccessKeyId", ctx.KeyId));
-            ctx.Parameters.Add(new KeyValuePair<String, String>("SignatureNonce", System.Guid.NewGuid().ToString()));
+            ctx.Parameters.TryAdd("AccessKeyId", ctx.KeyId);
+            ctx.Parameters.TryAdd("SignatureNonce", System.Guid.NewGuid().ToString());
 
             handler.HandleBefore(ctx);
             if (ctx.Response == null)

@@ -64,7 +64,7 @@ namespace Wlniao.Aliyun
         /// <summary>
         /// 基础参数
         /// </summary>
-        public List<KeyValuePair<String, String>> Parameters { get; set; }
+        public Dictionary<String, String> Parameters { get; set; }
         /// <summary>
         /// 请求的内容
         /// </summary>
