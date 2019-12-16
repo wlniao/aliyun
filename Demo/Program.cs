@@ -15,7 +15,6 @@ namespace Demo
     {
         public static void Main(string[] args)
         {
-            var c = new Wlniao.Aliyun.Client("LTAI4FrcTR9ZBrH8Ysr9NZv9", "jabNU3bYi4z4hjwCOSkIRufctvQoZB");
             //var r = c.SubmitJobs("62a1f646a44d4060bb3d0260840e68ad", "6deae57592b845928758369313d024da", "daxianghai", "oss-cn-beijing", "asset/test.mp4");
             //var r = c.SubmitMediaInfoJob("daxianghai", "oss-cn-beijing", "asset/test-zm.mp4");
             //if (r.data.FirstIsH264())
