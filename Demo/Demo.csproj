@@ -12,8 +12,7 @@
     <Folder Include="Views\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Wlniao.Aliyun.Mts\Wlniao.Aliyun.Mts.csproj" />
-    <ProjectReference Include="..\Wlniao.Aliyun\Wlniao.Aliyun.csproj" />
+    <ProjectReference Include="..\..\xcore\Wlniao.XCore\Wlniao.XCore.csproj" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties Properties_4launchSettings_1json__JSONSchema="" /></VisualStudio></ProjectExtensions>

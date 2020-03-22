@@ -131,16 +131,15 @@ namespace Wlniao.Aliyun
         /// <param name="ApiPath"></param>
         /// <param name="kvs"></param>
         /// <returns></returns>
-        public ApiResult<String> PublicGet(String ApiHost, String ApiPath, params KeyValuePair<String, String>[] kvs)
+        public String PublicGet(String ApiHost, String ApiPath, params KeyValuePair<String, String>[] kvs)
         {
-            var rlt = new ApiResult<String> { message = "未知错误" };
             if (string.IsNullOrEmpty(this.KeyId))
             {
-                rlt.message = "阿里云AccessKeyId未设置";
+                return "阿里云AccessKeyId未设置";
             }
             else if (string.IsNullOrEmpty(this.KeySecret))
             {
-                rlt.message = "阿里云AliyunKeySecret未设置";
+                return "阿里云AliyunKeySecret未设置";
             }
             else
             {
@@ -189,21 +188,9 @@ namespace Wlniao.Aliyun
                     handler.HandleBefore(ctx);
                     handler.HandleAfter(ctx);
                 }
-                catch
-                {
-                    try
-                    {
-                        var err = Newtonsoft.Json.JsonConvert.DeserializeObject<Error>(ctx.HttpResponseString);
-                        rlt.code = err.errcode;
-                        rlt.message = err.errmsg;
-                    }
-                    catch
-                    {
-                        rlt.message = "InvalidJsonString";
-                    }
-                }
+                catch { }
+                return ctx.HttpResponseString;
             }
-            return rlt;
         }
         /// <summary>
         /// 
@@ -212,16 +199,15 @@ namespace Wlniao.Aliyun
         /// <param name="ApiPath"></param>
         /// <param name="kvs"></param>
         /// <returns></returns>
-        public ApiResult<String> PublicPost(String ApiHost, String ApiPath, params KeyValuePair<String, String>[] kvs)
+        public String PublicPost(String ApiHost, String ApiPath, params KeyValuePair<String, String>[] kvs)
         {
-            var rlt = new ApiResult<String> { message = "未知错误" };
             if (string.IsNullOrEmpty(this.KeyId))
             {
-                rlt.message = "阿里云AccessKeyId未设置";
+                return "阿里云AccessKeyId未设置";
             }
             else if (string.IsNullOrEmpty(this.KeySecret))
             {
-                rlt.message = "阿里云AliyunKeySecret未设置";
+                return "阿里云AliyunKeySecret未设置";
             }
             else
             {
@@ -270,21 +256,9 @@ namespace Wlniao.Aliyun
                     handler.HandleBefore(ctx);
                     handler.HandleAfter(ctx);
                 }
-                catch
-                {
-                    try
-                    {
-                        var err = Newtonsoft.Json.JsonConvert.DeserializeObject<Error>(ctx.HttpResponseString);
-                        rlt.code = err.errcode;
-                        rlt.message = err.errmsg;
-                    }
-                    catch
-                    {
-                        rlt.message = "InvalidJsonString";
-                    }
-                }
+                catch { }
+                return ctx.HttpResponseString;
             }
-            return rlt;
         }
         /// <summary>
         /// 
@@ -294,16 +268,15 @@ namespace Wlniao.Aliyun
         /// <param name="Content"></param>
         /// <param name="kvs"></param>
         /// <returns></returns>
-        public ApiResult<String> PublicPost(String ApiHost, String ApiPath, String Content, params KeyValuePair<String, String>[] kvs)
+        public String PublicPost(String ApiHost, String ApiPath, String Content, params KeyValuePair<String, String>[] kvs)
         {
-            var rlt = new ApiResult<String> { message = "未知错误" };
             if (string.IsNullOrEmpty(this.KeyId))
             {
-                rlt.message = "阿里云AccessKeyId未设置";
+                return "阿里云AccessKeyId未设置";
             }
             else if (string.IsNullOrEmpty(this.KeySecret))
             {
-                rlt.message = "阿里云AliyunKeySecret未设置";
+                return "阿里云AliyunKeySecret未设置";
             }
             else
             {
@@ -360,21 +333,9 @@ namespace Wlniao.Aliyun
                     handler.HandleBefore(ctx);
                     handler.HandleAfter(ctx);
                 }
-                catch
-                {
-                    try
-                    {
-                        var err = Newtonsoft.Json.JsonConvert.DeserializeObject<Error>(ctx.HttpResponseString);
-                        rlt.code = err.errcode;
-                        rlt.message = err.errmsg;
-                    }
-                    catch
-                    {
-                        rlt.message = "InvalidJsonString";
-                    }
-                }
+                catch { }
+                return ctx.HttpResponseString;
             }
-            return rlt;
         }
         /// <summary>
         /// 
@@ -384,16 +345,15 @@ namespace Wlniao.Aliyun
         /// <param name="Content"></param>
         /// <param name="kvs"></param>
         /// <returns></returns>
-        public ApiResult<String> PublicPost(String ApiHost, String ApiPath, byte[] Content, params KeyValuePair<String, String>[] kvs)
+        public String PublicPost(String ApiHost, String ApiPath, byte[] Content, params KeyValuePair<String, String>[] kvs)
         {
-            var rlt = new ApiResult<String> { message = "未知错误" };
             if (string.IsNullOrEmpty(this.KeyId))
             {
-                rlt.message = "阿里云AccessKeyId未设置";
+                return "阿里云AccessKeyId未设置";
             }
             else if (string.IsNullOrEmpty(this.KeySecret))
             {
-                rlt.message = "阿里云AliyunKeySecret未设置";
+                return "阿里云AliyunKeySecret未设置";
             }
             else
             {
@@ -450,21 +410,9 @@ namespace Wlniao.Aliyun
                     handler.HandleBefore(ctx);
                     handler.HandleAfter(ctx);
                 }
-                catch
-                {
-                    try
-                    {
-                        var err = Newtonsoft.Json.JsonConvert.DeserializeObject<Error>(ctx.HttpResponseString);
-                        rlt.code = err.errcode;
-                        rlt.message = err.errmsg;
-                    }
-                    catch
-                    {
-                        rlt.message = "InvalidJsonString";
-                    }
-                }
+                catch { }
+                return ctx.HttpResponseString;
             }
-            return rlt;
         }
 
 
