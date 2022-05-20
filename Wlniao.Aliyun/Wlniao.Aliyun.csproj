@@ -14,7 +14,7 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <PackageId>Wlniao.Aliyun</PackageId>
-    <Version>3.1.0</Version>
+    <Version>3.1.1</Version>
     <RootNamespace>Wlniao.Aliyun</RootNamespace>
   </PropertyGroup>
 
@@ -35,6 +35,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Wlniao.XCore" Version="3.1.7" />
+    <PackageReference Include="Wlniao.XCore" Version="3.1.24" />
   </ItemGroup>
 </Project>

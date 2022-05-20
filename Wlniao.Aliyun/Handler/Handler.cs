@@ -17,7 +17,6 @@ namespace Wlniao.Aliyun
             PipelineHandler handler;
             handler = new ApiHandler();
             handler = new AliyunHandler(handler);
-            handler = new RetryHandler(handler);
             inner = handler;
         }
         /// <summary>

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Wlniao.Handler;
+
 namespace Wlniao.Aliyun
 {
     /// <summary>
@@ -82,15 +84,27 @@ namespace Wlniao.Aliyun
         /// </summary>
         public string HttpResponseString { get; set; }
         /// <summary>
-        /// 请求重试次数
+        /// 
         /// </summary>
-        public int Retry { get; set; }
+        string IContext.Method { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string ApiPath { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public object RequestBody { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public object ResponseBody { get; set; }
+
         /// <summary>
         /// 
         /// </summary>
         public Context()
         {
-            Retry = 0;
         }
     }
 }

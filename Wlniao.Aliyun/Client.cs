@@ -148,7 +148,6 @@ namespace Wlniao.Aliyun
                 ctx.KeySecret = KeySecret;
                 ctx.RequestHost = ApiHost;
                 ctx.RequestPath = ApiPath;
-                ctx.Retry = int.MaxValue;
                 ctx.Method = System.Net.Http.HttpMethod.Get;
                 ctx.Parameters = new Dictionary<String, String>();
                 if (kvs != null)
@@ -216,7 +215,6 @@ namespace Wlniao.Aliyun
                 ctx.KeySecret = KeySecret;
                 ctx.RequestHost = ApiHost;
                 ctx.RequestPath = ApiPath;
-                ctx.Retry = int.MaxValue;
                 ctx.Method = System.Net.Http.HttpMethod.Post;
                 ctx.Parameters = new Dictionary<String, String>();
                 if (kvs != null)
@@ -285,7 +283,6 @@ namespace Wlniao.Aliyun
                 ctx.KeySecret = KeySecret;
                 ctx.RequestHost = ApiHost;
                 ctx.RequestPath = ApiPath;
-                ctx.Retry = int.MaxValue;
                 ctx.Method = System.Net.Http.HttpMethod.Post;
                 ctx.Parameters = new Dictionary<String, String>();
                 if (kvs != null)
@@ -362,7 +359,6 @@ namespace Wlniao.Aliyun
                 ctx.KeySecret = KeySecret;
                 ctx.RequestHost = ApiHost;
                 ctx.RequestPath = ApiPath;
-                ctx.Retry = int.MaxValue;
                 ctx.Method = System.Net.Http.HttpMethod.Post;
                 ctx.Parameters = new Dictionary<String, String>();
                 if (kvs != null)
