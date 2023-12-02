@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 namespace Wlniao.Aliyun
 {
     /// <summary>
@@ -246,7 +247,7 @@ namespace Wlniao.Aliyun
             {
                 try
                 {
-                    return Newtonsoft.Json.JsonConvert.DeserializeObject<ApiResult<T>>(_rlt.data);
+                    return System.Text.Json.JsonSerializer.Deserialize<ApiResult<T>>(_rlt.data);
                 }
                 catch (Exception ex)
                 {
