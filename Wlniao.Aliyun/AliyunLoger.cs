@@ -42,7 +42,7 @@ namespace Wlniao.Aliyun
     {
         private static RegexOptions options = RegexOptions.None;
         private static Regex regexMsgId = new Regex(@"msgid:(.+),", options);
-        private static Regex regexUseTime = new Regex(@"\[(.+)\]", options);
+        private static Regex regexUseTime = new Regex(@"\[usetime:(.+)\]", options);
         private static Regex regexUrlLink = new Regex(@"((https?|ftp|file):\/\/[\-A-Za-z0-9+&@#\/%?=~_|!:,.;]*[\-A-Za-z0-9+&@#\/%=~_|])", options);
         private static readonly string[] levels = new string[] { "info", "warn", "debug", "error", "fatal" };
         /// <summary>
