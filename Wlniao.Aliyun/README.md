@@ -24,3 +24,22 @@ WLN_LOG_SLS_STORE=日志存储库名称
 WLN_LOG_KEYID=阿里云AccessKey ID
 WLN_LOG_KEYSECRET=阿里云AccessKey Secret
 ```
+配置权限策略
+```
+{
+    "Version": "1",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "log:GetLogStore",
+                "log:CreateLogStore",
+                "log:PostLogStoreLogs",
+                "log:CreateIndex",
+                "log:UpdateIndex"
+            ],
+            "Resource": "acs:log:*:*:project/<projectName>/logstore/*"
+        }
+    ]
+}
+```
