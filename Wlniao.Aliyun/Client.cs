@@ -118,7 +118,7 @@ namespace Wlniao.Aliyun
             }
             catch (System.AggregateException e)
             {
-                log.Error(e.Message);
+                Log.Loger.Error(e.Message);
                 throw e.GetBaseException();
             }
             return task.Result;
