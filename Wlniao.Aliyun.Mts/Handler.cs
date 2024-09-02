@@ -18,7 +18,7 @@ namespace Wlniao.Aliyun.Mts
             handler = new ApiHandler();
             handler = new AliyunHandler(handler);
             handler = new MtsHandler(handler);
-            handler = new RetryHandler(handler);
+            //handler = new RetryHandler(handler);
             inner = handler;
         }
         /// <summary>

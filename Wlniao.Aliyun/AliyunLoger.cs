@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Wlniao;
 using Wlniao.Log;
@@ -38,6 +39,9 @@ namespace Wlniao.Aliyun
     /// </summary>
     public class AliyunLoger : ILogProvider
     {
+        private static RegexOptions options = RegexOptions.None;
+        private static Regex regexMsgId = new Regex(@"msgid:(.+),", options);
+        private static Regex regexUseTime = new Regex(@"\[(.+)\]", options);
         private static readonly string[] levels = new string[] { "info", "warn", "debug", "error", "fatal" };
         /// <summary>
         /// 日志库名称
@@ -172,7 +176,7 @@ namespace Wlniao.Aliyun
             try
             {
                 LogInfo item = null;
-                if (entrie != null && !string.IsNullOrEmpty(topic))
+                if (entrie != null && !string.IsNullOrEmpty(topic) && !string.IsNullOrEmpty(entrie.content))
                 {
                     if (levels.Contains(topic))
                     {
@@ -202,6 +206,36 @@ namespace Wlniao.Aliyun
                             entrie.tags.TryAdd("level", "debug");
                         }
                     }
+                    //try
+                    //{
+                    //    var msgStart = entrie.content.IndexOf("msgid:");
+                    //    var msgEnd = entrie.content.IndexOf(",", msgStart);
+                    //    if (msgStart >= 0 && msgEnd > msgStart)
+                    //    {
+                    //        var msgtext = entrie.content.Substring(msgStart, msgEnd - msgStart + 1);
+                    //        entrie.tags.TryAdd("msgid", msgtext.Substring(6, msgtext.Length - 7).Trim());
+                    //        entrie.content = entrie.content.Replace(msgtext, "").Trim();
+                    //    }
+                    //}
+                    //catch { }
+                    try
+                    {
+                        foreach (Match m in regexMsgId.Matches(entrie.content))
+                        {
+                            entrie.content = entrie.content.Replace(m.Groups[0].ToString(), "").Trim();
+                            entrie.tags.TryAdd("msgid", m.Groups[1].ToString());
+                        }
+                    }
+                    catch { }
+                    try
+                    {
+                        foreach (Match m in regexUseTime.Matches(entrie.content))
+                        {
+                            entrie.content = entrie.content.Replace(m.Groups[0].ToString(), "").Trim();
+                            entrie.tags.TryAdd("usetime", m.Groups[1].ToString());
+                        }
+                    }
+                    catch { }
                     item = ConvertToDto(entrie);
                 }
                 if (push || this.Interval <= 0)
@@ -232,29 +266,15 @@ namespace Wlniao.Aliyun
                         var err = false;
                         try
                         {
-                            var client = LogServiceClientBuilders.HttpBuilder
-                                 // 服务入口<endpoint>及项目名<projectName>。
-                                 .Endpoint(EndPortHost, ProjectName)
-                                 // 访问密钥信息。
-                                 .Credential(AccessKeyId, AccessKeySecret)
-                                 //设置每次请求超时时间。
-                                 .RequestTimeout(2000)
-                                 //// 设置是否使用代理，为false时将会绕过系统代理。
-                                 //.UseProxy(true)
-                                 //// 设置代理信息，（可选）支持需要身份验证的代理设置。
-                                 //.Proxy("<proxyHost>", proxyUserName: "<username>", proxyPassword: "<password>")
+                            var client = LogServiceClientBuilders.HttpBuilder.RequestTimeout(2000) //设置每次请求超时时间
+                                 .Endpoint(EndPortHost, ProjectName) // 服务入口及项目名
+                                 .Credential(AccessKeyId, AccessKeySecret) // 访问密钥信息                                 
                                  .Build();
                             var response = client.PostLogStoreLogsAsync(StoreName, dto).Result;
                             if (response == null || !response.IsSuccess)
                             {
                                 err = true;
                                 AliyunErrorLog("Push Result:" + response.Error.ErrorMessage);
-                            }
-                            else
-                            {
-#if DEBUG
-                                Log.Loger.Console("Aliyun SLS post success!");
-#endif
                             }
                         }
                         catch (Exception ex)
@@ -269,7 +289,7 @@ namespace Wlniao.Aliyun
                                 foreach (var log in dto.Logs)
                                 {
                                     //失败时把待写入数据全部放入队列
-                                    queue.Enqueue(new LogEntrie { tags = log.Contents, time = log.Time.DateTime, content = log.Contents["content"] });
+                                    queue.Enqueue(new LogEntrie { tags = log.Contents, time = log.Time.DateTime, content = log.Contents["body"] });
                                 }
                             }
                         }
@@ -282,7 +302,7 @@ namespace Wlniao.Aliyun
                         }
                     }
                 }
-                else if (entrie != null)
+                else if (entrie != null && !string.IsNullOrEmpty(entrie.content))
                 {
                     //定时落盘时把待写入数据放入日志流队列
                     queue.Enqueue(entrie);
@@ -320,13 +340,13 @@ namespace Wlniao.Aliyun
                 Time = entrie.time,
                 Contents = entrie.tags
             };
-            if (dto.Contents.ContainsKey("content"))
+            if (dto.Contents.ContainsKey("body"))
             {
-                dto.Contents["content"] = entrie.content;
+                dto.Contents["body"] = entrie.content;
             }
             else
             {
-                dto.Contents.TryAdd("content", entrie.content);
+                dto.Contents.TryAdd("body", entrie.content);
             }
             return dto;
         }
@@ -477,7 +497,10 @@ namespace Wlniao.Aliyun
                     flog.Write(topic, message);
                 }
             }
-            Write(topic, entrie, logLevel);
+            if (logLevel != LogLevel.Debug)
+            {
+                Write(topic, entrie, logLevel);
+            }
         }
     }
 }
