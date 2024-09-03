@@ -9,7 +9,7 @@ namespace Wlniao.Loger.Test
         [TestMethod]
         public void TestMethod1()
         {
-            Wlniao.Log.Loger.SetLogger(new Wlniao.Aliyun.AliyunLoger(Log.LogLevel.Debug));
+            Wlniao.Log.Loger.SetLogger(new Wlniao.Aliyun.AliyunLoger());
             Wlniao.Log.Loger.Topic("test", DateTools.Format());
             System.Threading.Thread.Sleep(1000);
             Wlniao.Log.Loger.Topic("test", DateTools.Format());

@@ -89,6 +89,26 @@ namespace Wlniao.Aliyun
         public int Interval = 0;
 
         private FileLoger flog = null;
+
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public AliyunLoger()
+        {
+            NewAliyunLoger(LogLevel.None, null, null, null, null, null, 0);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="accesskey_id">AccessKeyId</param>
+        /// <param name="accesskey_secret">AccessKeySecret</param>
+        /// <param name="interval">落盘时间间隔（秒）</param>
+        public AliyunLoger(string accesskey_id = null, string accesskey_secret = null, int interval = 0)
+        {
+            NewAliyunLoger(LogLevel.None, null, null, null, accesskey_id, accesskey_secret, interval);
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -97,13 +117,41 @@ namespace Wlniao.Aliyun
         /// <param name="project">日志项目名称</param>
         /// <param name="store">日志存储库名称</param>
         /// <param name="interval">落盘时间间隔（秒）</param>
-        public AliyunLoger(LogLevel level = LogLevel.Information, string endport = null, string project = null, string store = null, int interval = 0)
+        public AliyunLoger(LogLevel level = LogLevel.None, string endport = null, string project = null, string store = null, int interval = 0)
         {
-            flog = new FileLoger(level);
-            this.level = level;
+            NewAliyunLoger(level, endport, project, store, null, null, interval);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="level">日志输出级别</param>
+        /// <param name="endport">服务器接入点</param>
+        /// <param name="project">日志项目名称</param>
+        /// <param name="store">日志存储库名称</param>
+        /// <param name="accesskey_id">AccessKeyId</param>
+        /// <param name="accesskey_secret">AccessKeySecret</param>
+        /// <param name="interval">落盘时间间隔（秒）</param>
+        public AliyunLoger(LogLevel level = LogLevel.None, string endport = null, string project = null, string store = null, string accesskey_id = null, string accesskey_secret = null, int interval = 0)
+        {
+            NewAliyunLoger(level, endport, project, store, accesskey_id, accesskey_secret, interval);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="level">日志输出级别</param>
+        /// <param name="endport">服务器接入点</param>
+        /// <param name="project">日志项目名称</param>
+        /// <param name="store">日志存储库名称</param>
+        /// <param name="accesskey_id">AccessKeyId</param>
+        /// <param name="accesskey_secret">AccessKeySecret</param>
+        /// <param name="interval">落盘时间间隔（秒）</param>
+        private void NewAliyunLoger(LogLevel level = LogLevel.None, string endport = null, string project = null, string store = null, string accesskey_id = null, string accesskey_secret = null, int interval = 0)
+        {
+            this.level = level == LogLevel.None ? Loger.LogLevel : level;
             this.Interval = this.Interval > 0 ? this.Interval : cvt.ToInt(Config.GetConfigs("WLN_LOG_INTERVAL", "3"));
-            this.AccessKeyId = Config.GetConfigs("WLN_LOG_KEYID", AccessKey.KeyId).TrimEnd('/');
-            this.AccessKeySecret = Config.GetConfigs("WLN_LOG_KEYSECRET", AccessKey.KeySecret).TrimEnd('/');
+            this.AccessKeyId = string.IsNullOrEmpty(accesskey_id) ? Config.GetConfigs("WLN_LOG_KEYID", AccessKey.KeyId).TrimEnd('/') : accesskey_id;
+            this.AccessKeySecret = string.IsNullOrEmpty(accesskey_secret) ? Config.GetConfigs("WLN_LOG_KEYSECRET", AccessKey.KeySecret).TrimEnd('/') : accesskey_secret;
+            flog = new FileLoger(level);
             if (string.IsNullOrEmpty(endport))
             {
                 if (this.EndPortHost == null)
@@ -187,7 +235,6 @@ namespace Wlniao.Aliyun
                 });
             }
         }
-
         /// <summary>
         /// 输出日志
         /// </summary>
@@ -370,7 +417,7 @@ namespace Wlniao.Aliyun
         /// <param name="entrie"></param>
         /// <returns></returns>
         private LogInfo ConvertToDto(LogEntrie entrie)
-        {
+        {            
             var dto = new LogInfo
             {
                 Time = entrie.time,
