@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Version>8.0.6</Version>
+		<Version>8.0.7</Version>
 		<Authors>XieChaoyi</Authors>
 		<Copyright>Copyright 2023 XieChaoyi</Copyright>
 		<Description>Aliyun for Wlniao.XCore</Description>

@@ -200,31 +200,34 @@ namespace Wlniao.Aliyun
             {
                 this.StoreName = store.Trim();
             }
-            try
-            {
-                var client = LogServiceClientBuilders.HttpBuilder.RequestTimeout(2000) //设置每次请求超时时间
-                     .Endpoint(EndPortHost, ProjectName) // 服务入口及项目名
-                     .Credential(AccessKeyId, AccessKeySecret) // 访问密钥信息                                 
-                     .Build();
-                var resQuery = client.GetLogStoreAsync(StoreName, ProjectName).Result;
-                if (!resQuery.IsSuccess && resQuery.Error != null && resQuery.Error.ErrorCode != null && resQuery.Error.ErrorCode.Code == "LogStoreNotExist")
-                {
-                    var createStore = client.CreateLogStoreAsync(StoreName, 30, 1, ProjectName).Result;
-                    if (createStore.IsSuccess)
-                    {
-                        var keys = new Dictionary<string, IndexKeyInfo>();
-                        keys.TryAdd("level", new IndexKeyInfo("text") { });
-                        keys.TryAdd("topic", new IndexKeyInfo("text") { });
-                        keys.TryAdd("msgid", new IndexKeyInfo("text") { });
-                        keys.TryAdd("urlto", new IndexKeyInfo("text") { });
-                        client.CreateIndexAsync(StoreName, new IndexLineInfo(new char[0]), ProjectName).GetAwaiter();
-                    }
-                }
-            }
-            catch { }
             if (this.Interval > 0 && !string.IsNullOrEmpty(EndPortHost) && !string.IsNullOrEmpty(ProjectName) && !string.IsNullOrEmpty(StoreName)
                 && !string.IsNullOrEmpty(AccessKeyId) && !string.IsNullOrEmpty(AccessKeySecret))
             {
+                Task.Run(() =>
+                {
+                    try
+                    {
+                        var client = LogServiceClientBuilders.HttpBuilder.RequestTimeout(2000) //设置每次请求超时时间
+                             .Endpoint(EndPortHost, ProjectName) // 服务入口及项目名
+                             .Credential(AccessKeyId, AccessKeySecret) // 访问密钥信息                                 
+                             .Build();
+                        var resQuery = client.GetLogStoreAsync(StoreName, ProjectName).Result;
+                        if (!resQuery.IsSuccess && resQuery.Error != null && resQuery.Error.ErrorCode != null && resQuery.Error.ErrorCode.Code == "LogStoreNotExist")
+                        {
+                            var createStore = client.CreateLogStoreAsync(StoreName, 30, 1, ProjectName).Result;
+                            if (createStore.IsSuccess)
+                            {
+                                var keys = new Dictionary<string, IndexKeyInfo>();
+                                keys.TryAdd("level", new IndexKeyInfo("text") { });
+                                keys.TryAdd("topic", new IndexKeyInfo("text") { });
+                                keys.TryAdd("msgid", new IndexKeyInfo("text") { });
+                                keys.TryAdd("urlto", new IndexKeyInfo("text") { });
+                                client.CreateIndexAsync(StoreName, new IndexLineInfo(new char[0]), ProjectName).GetAwaiter();
+                            }
+                        }
+                    }
+                    catch { }
+                });
                 Task.Run(() =>
                 {
                     while (true)
