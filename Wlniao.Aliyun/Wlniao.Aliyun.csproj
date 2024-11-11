@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Version>8.0.7</Version>
+		<Version>8.0.8</Version>
 		<Authors>XieChaoyi</Authors>
 		<Copyright>Copyright 2023 XieChaoyi</Copyright>
 		<Description>Aliyun for Wlniao.XCore</Description>
@@ -41,6 +41,6 @@
 
 	<ItemGroup>
 		<PackageReference Include="Aliyun.Api.LogService" Version="1.1.0" />
-		<PackageReference Include="Wlniao.XCore" Version="8.0.37" />
+		<PackageReference Include="Wlniao.XCore" Version="8.0.38" />
 	</ItemGroup>
 </Project>
