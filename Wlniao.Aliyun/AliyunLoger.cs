@@ -344,7 +344,10 @@ namespace Wlniao.Aliyun
                         {
                             // 同时写入队列中之前失败的日志流
                             var tmp = queue.Dequeue();
-                            dto.Logs.Add(ConvertToDto(tmp));
+                            if (tmp != null)
+                            {
+                                dto.Logs.Add(ConvertToDto(tmp));
+                            }
                         }
                     }
                     if (dto.Logs.Count > 0)
