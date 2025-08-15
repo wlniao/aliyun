@@ -84,7 +84,7 @@ namespace Wlniao.Aliyun.Mts
             ctx.Method = System.Net.Http.HttpMethod.Get;
             ctx.Parameters.TryAdd("Action", ctx.Operation);
             ctx.Parameters.TryAdd("PipelineId", req.PipelineId);
-            ctx.Parameters.TryAdd("Input", Json.ToString(new { Bucket = req.InputBucket, Location = req.InputLocation, Object = req.InputObject }));
+            ctx.Parameters.TryAdd("Input", Json.Serialize(new { Bucket = req.InputBucket, Location = req.InputLocation, Object = req.InputObject }));
             ctx.Parameters.TryAdd("OutputBucket", req.OutputBucket);
             ctx.Parameters.TryAdd("OutputLocation", req.OutputLocation);
             ctx.Parameters.TryAdd("Outputs", JsonConvert.SerializeObject(new List<Object>(new[] { new { req.TemplateId, req.OutputObject } })));
@@ -128,7 +128,7 @@ namespace Wlniao.Aliyun.Mts
 
             ctx.Method = System.Net.Http.HttpMethod.Get;
             ctx.Parameters.TryAdd("Action", ctx.Operation);
-            ctx.Parameters.TryAdd("Input", Json.ToString(new Models.Input { Bucket = req.InputBucket, Location = req.InputLocation, Object = req.InputObject }));
+            ctx.Parameters.TryAdd("Input", Json.Serialize(new Models.Input { Bucket = req.InputBucket, Location = req.InputLocation, Object = req.InputObject }));
             ctx.Parameters.TryAdd("UserData", req.UserData);
 
 

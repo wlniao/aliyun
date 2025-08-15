@@ -4,8 +4,10 @@
 
 *.log
 *.user
-/.vs
-/*/.vscode
+
+**.idea
+**.vs
+**.vscode
 /*/bin
 /*/obj
 /*/Properties

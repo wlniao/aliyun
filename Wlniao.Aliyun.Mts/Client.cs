@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Wlniao;
 using Wlniao.Aliyun.Mts.Request;
 using Wlniao.Aliyun.Mts.Response;
+using Wlniao.Log;
+
 namespace Wlniao.Aliyun.Mts
 {
     /// <summary>
@@ -215,7 +217,7 @@ namespace Wlniao.Aliyun.Mts
             }
             catch (System.AggregateException e)
             {
-                log.Error(e.Message);
+                Loger.Error(e.Message);
                 throw e.GetBaseException();
             }
             return task.Result;

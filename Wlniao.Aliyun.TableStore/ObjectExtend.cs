@@ -48,7 +48,7 @@ namespace Wlniao.Aliyun.TableStore
         {
             if (val.Type == ColumnValueType.Integer)
             {
-                rft.SetPropertyValue(input, key, val.IntegerValue);
+                Wlniao.Runtime.Reflection.SetPropertyValue(input, key, val.IntegerValue);
             }
             else if (val.Type == ColumnValueType.String)
             {
@@ -56,19 +56,19 @@ namespace Wlniao.Aliyun.TableStore
                 {
                     throw new EmptyPrimaryKeyException();
                 }
-                rft.SetPropertyValue(input, key, val.StringValue);
+                Wlniao.Runtime.Reflection.SetPropertyValue(input, key, val.StringValue);
             }
             else if (val.Type == ColumnValueType.Double)
             {
-                rft.SetPropertyValue(input, key, val.DoubleValue);
+                Wlniao.Runtime.Reflection.SetPropertyValue(input, key, val.DoubleValue);
             }
             else if (val.Type == ColumnValueType.Boolean)
             {
-                rft.SetPropertyValue(input, key, val.BooleanValue);
+                Wlniao.Runtime.Reflection.SetPropertyValue(input, key, val.BooleanValue);
             }
             else if (val.Type == ColumnValueType.Binary)
             {
-                rft.SetPropertyValue(input, key, val.BinaryValue);
+                Wlniao.Runtime.Reflection.SetPropertyValue(input, key, val.BinaryValue);
             }
         }
     }

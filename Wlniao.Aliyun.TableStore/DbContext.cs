@@ -1,8 +1,8 @@
 /*-----------------------Copyright 2017 www.wlniao.com---------------------------
-    ÎÄ¼şÃû³Æ£ºWlniao\MongoDB\DbContext.cs
-    ÊÊÓÃ»·¾³£ºNETCoreCLR 1.0/2.0
-    ×îºóĞŞ¸Ä£º2016Äê3ÔÂ24ÈÕ02:58:50
-    ¹¦ÄÜÃèÊö£ºDbContext»ùÀà
+    æ–‡ä»¶åç§°ï¼šWlniao\MongoDB\DbContext.cs
+    é€‚ç”¨ç¯å¢ƒï¼šNETCoreCLR 1.0/2.0
+    æœ€åä¿®æ”¹ï¼š2016å¹´3æœˆ24æ—¥02:58:50
+    åŠŸèƒ½æè¿°ï¼šDbContextåŸºç±»
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -26,11 +26,12 @@ using Aliyun.TableStore.DataModel.Search;
 using Aliyun.TableStore.DataModel.Search.Sort;
 using Aliyun.TableStore.DataModel.Search.Query;
 using System.Diagnostics;
+using Wlniao.Log;
 
 namespace Wlniao.Aliyun.TableStore
 {
     /// <summary>
-    /// DbContext»ùÀà
+    /// DbContextåŸºç±»
     /// </summary>
     public partial class DbContext
     {
@@ -94,7 +95,7 @@ namespace Wlniao.Aliyun.TableStore
                 OtsConfig.OTSErrorLogHandler = null;
                 watch.Stop();
                 Console.WriteLine("Ots Init: " + watch.Elapsed);
-                #region ³¢ÊÔÊ¹ÓÃÄÚÍøÁ´½ÓµØÖ·
+                #region å°è¯•ä½¿ç”¨å†…ç½‘é“¾æ¥åœ°å€
                 try
                 {
 #if !DEBUG
@@ -128,7 +129,7 @@ namespace Wlniao.Aliyun.TableStore
         /// <param name="type"></param>
         protected static string SetTable(Type type)
         {
-#region ³õÊ¼»¯»º´æ
+#region åˆå§‹åŒ–ç¼“å­˜
             if (!tableNames.ContainsKey(type))
             {
                 foreach (var attr in type.CustomAttributes)
@@ -144,9 +145,9 @@ namespace Wlniao.Aliyun.TableStore
 
             var name = tableNames.ContainsKey(type) ? tableNames[type] : type.Name.ToLower();
 
-#region ·ÖÎö±í½á¹¹
+#region åˆ†æè¡¨ç»“æ„
             var pkSchema = new PrimaryKeySchema();
-            foreach (PropertyInfo info in rft.GetPropertyList(type))
+            foreach (PropertyInfo info in Wlniao.Runtime.Reflection.GetPropertyList(type))
             {
                 if (info.GetCustomAttribute(typeof(System.ComponentModel.DataAnnotations.KeyAttribute)) == null)
                 {
@@ -166,22 +167,22 @@ namespace Wlniao.Aliyun.TableStore
                 }
                 else
                 {
-                    throw new Exception("²»Ö§³Öµ±Ç°ÀàĞÍµÄÖ÷¼ü");
+                    throw new Exception("ä¸æ”¯æŒå½“å‰ç±»å‹çš„ä¸»é”®");
                 }
             };
 #endregion
 
-#region Éú³É±í½á¹¹
+#region ç”Ÿæˆè¡¨ç»“æ„
             if (tableKey.ContainsKey(name))
             {
-#region ¶Ô±ÈÒÑÓĞ½á¹¹
+#region å¯¹æ¯”å·²æœ‰ç»“æ„
                 tableKey[name].ForEach(key =>
                 {
                     pkSchema.ForEach(tmp =>
                     {
                         if (key.Item1 == tmp.Item1 && (key.Item2 != tmp.Item2 || key.Item3 != tmp.Item3))
                         {
-                            log.Fatal("Table structure is inconsistent, table name:" + name);
+                            Loger.Fatal("Table structure is inconsistent, table name:" + name);
                             return;
                         }
                     });
@@ -190,24 +191,24 @@ namespace Wlniao.Aliyun.TableStore
             }
             else
             {
-#region ´´½¨ĞÂ±í
-                //Í¨¹ı±íÃûºÍÖ÷¼üÁĞµÄschema´´½¨Ò»¸ötableMeta
+#region åˆ›å»ºæ–°è¡¨
+                //é€šè¿‡è¡¨åå’Œä¸»é”®åˆ—çš„schemaåˆ›å»ºä¸€ä¸ªtableMeta
                 var client = new OTSClient(OtsConfig);
                 var tableMeta = new TableMeta(name, pkSchema);
-                // Éè¶¨Ô¤Áô¶ÁÍÌÍÂÁ¿Îª0£¬Ô¤ÁôĞ´ÍÌÍÂÁ¿Îª0
+                // è®¾å®šé¢„ç•™è¯»ååé‡ä¸º0ï¼Œé¢„ç•™å†™ååé‡ä¸º0
                 var reservedThroughput = new CapacityUnit(0, 0);
 
                 try
                 {
-                    // ¹¹ÔìCreateTableRequest¶ÔÏó
+                    // æ„é€ CreateTableRequestå¯¹è±¡
                     var reqCreateTable = new CreateTableRequest(tableMeta, reservedThroughput);
-                    // µ÷ÓÃclientµÄCreateTable½Ó¿Ú£¬Èç¹ûÃ»ÓĞÅ×³öÒì³££¬ÔòËµÃ÷³É¹¦£¬·ñÔòÊ§°Ü
+                    // è°ƒç”¨clientçš„CreateTableæ¥å£ï¼Œå¦‚æœæ²¡æœ‰æŠ›å‡ºå¼‚å¸¸ï¼Œåˆ™è¯´æ˜æˆåŠŸï¼Œå¦åˆ™å¤±è´¥
                     client.CreateTable(reqCreateTable);
 
-                    // Éú³É²éÑ¯Ë÷Òı
+                    // ç”ŸæˆæŸ¥è¯¢ç´¢å¼•
                     var reqCreateSearchIndex = new CreateSearchIndexRequest(name, name);
                     var fieldSchemas = new List<FieldSchema>();
-                    foreach (PropertyInfo info in rft.GetPropertyList(type))
+                    foreach (PropertyInfo info in Wlniao.Runtime.Reflection.GetPropertyList(type))
                     {
                         if (info.GetCustomAttribute(typeof(System.ComponentModel.DataAnnotations.CompareAttribute)) == null)
                         {
@@ -234,10 +235,10 @@ namespace Wlniao.Aliyun.TableStore
                     {
                         reqCreateSearchIndex.IndexSchame = new IndexSchema() { FieldSchemas = fieldSchemas };
                         client.CreateSearchIndex(reqCreateSearchIndex);
-                        log.Info("Create table succeeded, table name:" + name);
+                        Loger.Info("Create table succeeded, table name:" + name);
                     }
                 }
-                // ´¦ÀíÒì³£
+                // å¤„ç†å¼‚å¸¸
                 catch (Exception ex)
                 {
                     Console.WriteLine("Create table failed, exception:{0}", ex.Message);
@@ -255,7 +256,7 @@ namespace Wlniao.Aliyun.TableStore
         /// <param name="type"></param>
         protected static void DelTable(Type type)
         {
-#region ³õÊ¼»¯»º´æ
+#region åˆå§‹åŒ–ç¼“å­˜
             if (!tableNames.ContainsKey(type))
             {
                 foreach (var attr in type.CustomAttributes)
@@ -270,14 +271,14 @@ namespace Wlniao.Aliyun.TableStore
 #endregion
 
             var name = tableNames.ContainsKey(type) ? tableNames[type] : type.Name.ToLower();
-#region É¾³ıÒÑÓĞ±í
+#region åˆ é™¤å·²æœ‰è¡¨
             try
             {
                 var request = new DeleteTableRequest(name);
                 new OTSClient(OtsConfig).DeleteTable(request);
-                log.Info("Delete table succeeded, table name:" + name);
+                Loger.Info("Delete table succeeded, table name:" + name);
             }
-            // ´¦ÀíÒì³£
+            // å¤„ç†å¼‚å¸¸
             catch (Exception ex)
             {
                 Console.WriteLine("Delete table failed, exception:{0}", ex.Message);
@@ -316,7 +317,7 @@ namespace Wlniao.Aliyun.TableStore
 
             var keys = new PrimaryKey();
             var columns = new AttributeColumns();
-            foreach (PropertyInfo info in rft.GetPropertyList(type))
+            foreach (PropertyInfo info in Wlniao.Runtime.Reflection.GetPropertyList(type))
             {
                 var methodInfo = info.GetGetMethod();
                 if (methodInfo == null || methodInfo.IsStatic || !methodInfo.IsPublic)
@@ -325,7 +326,7 @@ namespace Wlniao.Aliyun.TableStore
                 }
                 if (info.GetCustomAttribute(typeof(System.ComponentModel.DataAnnotations.KeyAttribute)) == null)
                 {
-#region ÊôĞÔÁĞ´¦Àí
+#region å±æ€§åˆ—å¤„ç†
                     var propertyValue = info.GetValue(obj, null);
                     if (propertyValue == null)
                     {
@@ -363,7 +364,7 @@ namespace Wlniao.Aliyun.TableStore
                 }
                 else
                 {
-#region Ö÷¼ü×Ö¶Î´¦Àí
+#region ä¸»é”®å­—æ®µå¤„ç†
                     var propertyValue = info.GetValue(obj, null);
                     if (propertyValue == null)
                     {
@@ -400,7 +401,7 @@ namespace Wlniao.Aliyun.TableStore
 
             var keys = new PrimaryKey();
             var columns = new AttributeColumns();
-            foreach (PropertyInfo info in rft.GetPropertyList(type))
+            foreach (PropertyInfo info in Wlniao.Runtime.Reflection.GetPropertyList(type))
             {
                 var methodInfo = info.GetGetMethod();
                 if (methodInfo == null || methodInfo.IsStatic || !methodInfo.IsPublic)
@@ -409,7 +410,7 @@ namespace Wlniao.Aliyun.TableStore
                 }
                 if (info.GetCustomAttribute(typeof(System.ComponentModel.DataAnnotations.KeyAttribute)) == null)
                 {
-#region ÊôĞÔÁĞ´¦Àí
+#region å±æ€§åˆ—å¤„ç†
                     var propertyValue = info.GetValue(obj, null);
                     if (propertyValue == null)
                     {
@@ -447,7 +448,7 @@ namespace Wlniao.Aliyun.TableStore
                 }
                 else
                 {
-#region Ö÷¼ü×Ö¶Î´¦Àí
+#region ä¸»é”®å­—æ®µå¤„ç†
                     var propertyValue = info.GetValue(obj, null);
                     if (propertyValue == null)
                     {
@@ -483,7 +484,7 @@ namespace Wlniao.Aliyun.TableStore
 
             var keys = new PrimaryKey();
             var columns = new UpdateOfAttribute();
-            foreach (PropertyInfo info in rft.GetPropertyList(type))
+            foreach (PropertyInfo info in Wlniao.Runtime.Reflection.GetPropertyList(type))
             {
                 var methodInfo = info.GetGetMethod();
                 if (methodInfo == null || methodInfo.IsStatic || !methodInfo.IsPublic)
@@ -492,7 +493,7 @@ namespace Wlniao.Aliyun.TableStore
                 }
                 if (info.GetCustomAttribute(typeof(System.ComponentModel.DataAnnotations.KeyAttribute)) == null)
                 {
-#region ÊôĞÔÁĞ´¦Àí
+#region å±æ€§åˆ—å¤„ç†
                     var propertyValue = info.GetValue(obj, null);
                     if (propertyValue == null)
                     {
@@ -530,7 +531,7 @@ namespace Wlniao.Aliyun.TableStore
                 }
                 else
                 {
-#region Ö÷¼ü×Ö¶Î´¦Àí
+#region ä¸»é”®å­—æ®µå¤„ç†
                     var propertyValue = info.GetValue(obj, null);
                     if (propertyValue == null)
                     {
@@ -557,7 +558,7 @@ namespace Wlniao.Aliyun.TableStore
         }
 
         /// <summary>
-        /// ¶¨ÒåĞĞµÄÖ÷¼ü£¬±ØĞëÓë´´½¨±íÊ±µÄTableMetaÖĞ¶¨ÒåµÄÒ»ÖÂ
+        /// å®šä¹‰è¡Œçš„ä¸»é”®ï¼Œå¿…é¡»ä¸åˆ›å»ºè¡¨æ—¶çš„TableMetaä¸­å®šä¹‰çš„ä¸€è‡´
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="pk"></param>
@@ -581,7 +582,7 @@ namespace Wlniao.Aliyun.TableStore
             var name = tableNames.ContainsKey(type) ? tableNames[type] : SetTable(type);
             var pkSchema = tableKey[name];
 
-            // ¶¨ÒåĞĞµÄÖ÷¼ü£¬±ØĞëÓë´´½¨±íÊ±µÄTableMetaÖĞ¶¨ÒåµÄÒ»ÖÂ
+            // å®šä¹‰è¡Œçš„ä¸»é”®ï¼Œå¿…é¡»ä¸åˆ›å»ºè¡¨æ—¶çš„TableMetaä¸­å®šä¹‰çš„ä¸€è‡´
             var pk = new PrimaryKey();
             tableKey[name].ForEach(item =>
             {
@@ -621,11 +622,15 @@ namespace Wlniao.Aliyun.TableStore
                     return obj;
                 }
             }
-            catch (EmptyPrimaryKeyException ex)
+            catch (EmptyPrimaryKeyException)
             {
                 return default(T);
             }
-            catch { }
+            catch (Exception)
+            {
+                // ignored
+            }
+
             return default(T);
         }
         /// <summary>

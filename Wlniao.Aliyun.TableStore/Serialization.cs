@@ -66,13 +66,9 @@ namespace Wlniao.Aliyun.TableStore
                 }
                 return obj;
             }
-            catch (EmptyPrimaryKeyException ex)
+            catch (EmptyPrimaryKeyException)
             {
                 return default(T);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
             }
         }
         /// <summary>
@@ -100,13 +96,9 @@ namespace Wlniao.Aliyun.TableStore
                 }
                 return obj;
             }
-            catch (EmptyPrimaryKeyException ex)
+            catch (EmptyPrimaryKeyException)
             {
                 return default(T);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
             }
         }
     }
