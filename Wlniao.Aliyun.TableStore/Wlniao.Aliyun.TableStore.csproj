@@ -10,7 +10,7 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <PackageId>Wlniao.Aliyun.TableStore</PackageId>
-    <Version>0.0.4</Version>
+    <Version>0.0.5</Version>
     <RootNamespace>Wlniao.Aliyun.TableStore</RootNamespace>
     <PackageOutputPath>$(HOMEDRIVE)$(HOMEPATH)\.nuget</PackageOutputPath>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -20,7 +20,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Wlniao.XCore" Version="8.0.46" />
+    <PackageReference Include="Wlniao.Aliyun" Version="8.0.12" />
+    <PackageReference Include="Wlniao.XCore" Version="8.0.47" />
     <PackageReference Include="Aliyun.TableStore" Version="1.1.0" />
   </ItemGroup>
 </Project>

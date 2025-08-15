@@ -43,4 +43,8 @@
     <ProjectReference Include="..\Wlniao.Aliyun\Wlniao.Aliyun.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Wlniao.Aliyun" Version="8.0.12" />
+  </ItemGroup>
+
 </Project>

@@ -44,7 +44,7 @@ namespace Wlniao.Aliyun.TableStore
         /// <param name="input"></param>
         /// <param name="key"></param>
         /// <param name="val"></param>
-        public static void SetProperty(this Object input, String key, ColumnValue val)
+        public static void SetProperty(this object input, string key, ColumnValue val)
         {
             if (val.Type == ColumnValueType.Integer)
             {

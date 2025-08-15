@@ -18,6 +18,7 @@
 ------------------------------------------------------------------------------*/
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Aliyun.TableStore;
 using Aliyun.TableStore.Request;
 using Aliyun.TableStore.DataModel;
@@ -25,7 +26,6 @@ using System.Reflection;
 using Aliyun.TableStore.DataModel.Search;
 using Aliyun.TableStore.DataModel.Search.Sort;
 using Aliyun.TableStore.DataModel.Search.Query;
-using System.Diagnostics;
 using Wlniao.Log;
 
 namespace Wlniao.Aliyun.TableStore
@@ -43,11 +43,11 @@ namespace Wlniao.Aliyun.TableStore
         /// <summary>
         /// 
         /// </summary>
-        private static Dictionary<Type, String> tableNames = new Dictionary<Type, String>();
+        private static Dictionary<Type, string> tableNames = new Dictionary<Type, string>();
         /// <summary>
         /// 
         /// </summary>
-        private static Dictionary<String, PrimaryKeySchema> tableKey = new Dictionary<String, PrimaryKeySchema>();
+        private static Dictionary<string, PrimaryKeySchema> tableKey = new Dictionary<string, PrimaryKeySchema>();
 
         /// <summary>
         /// 
@@ -75,7 +75,7 @@ namespace Wlniao.Aliyun.TableStore
         /// <summary>
         /// 
         /// </summary>
-        protected static void OnConfiguring(String instanceName, String accessKeyID, String accessKeySecret, String regionId)
+        protected static void OnConfiguring(string instanceName, string accessKeyID, string accessKeySecret, string regionId)
         {
             var watch = Stopwatch.StartNew();
             OtsConfig = new OTSClientConfig("https://" + instanceName + "." + regionId + ".ots.aliyuncs.com", accessKeyID, accessKeySecret, instanceName);
@@ -310,7 +310,7 @@ namespace Wlniao.Aliyun.TableStore
         /// 
         /// </summary>
         /// <param name="obj"></param>
-        public void AddRow(Object obj)
+        public void AddRow(object obj)
         {
             var type = obj.GetType();
             var name = tableNames.ContainsKey(type) ? tableNames[type] : SetTable(type);
@@ -394,7 +394,7 @@ namespace Wlniao.Aliyun.TableStore
         /// 
         /// </summary>
         /// <param name="obj"></param>
-        public void PutRow(Object obj)
+        public void PutRow(object obj)
         {
             var type = obj.GetType();
             var name = tableNames.ContainsKey(type) ? tableNames[type] : SetTable(type);
@@ -477,7 +477,7 @@ namespace Wlniao.Aliyun.TableStore
         /// 
         /// </summary>
         /// <param name="obj"></param>
-        public void UpdateRow(Object obj)
+        public void UpdateRow(object obj)
         {
             var type = obj.GetType();
             var name = tableNames.ContainsKey(type) ? tableNames[type] : SetTable(type);
@@ -575,7 +575,7 @@ namespace Wlniao.Aliyun.TableStore
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T GetRow<T>(String key)
+        public T GetRow<T>(string key)
         {
             var type = typeof(T);
             var obj = System.Activator.CreateInstance<T>();
