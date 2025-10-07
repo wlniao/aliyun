@@ -129,7 +129,7 @@ namespace Wlniao.Aliyun
                                                 if (lines[index].ToLower().StartsWith("content-length"))
                                                 {
                                                     ts = lines[index].Split(' ');
-                                                    length = cvt.ToInt(ts[1]);
+                                                    length = Wlniao.Convert.ToInt(ts[1]);
                                                 }
                                                 else if (lines[index].ToLower().StartsWith("transfer-encoding"))
                                                 {
@@ -168,7 +168,7 @@ namespace Wlniao.Aliyun
                                             index++;
                                             if (index < lines.Length)
                                             {
-                                                var tempLength = cvt.DeHex(line, "0123456789abcdef");
+                                                var tempLength = Wlniao.Convert.DeHex(line, "0123456789abcdef");
                                                 if (tempLength > 0)
                                                 {
                                                     length += (int)tempLength;

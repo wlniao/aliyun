@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	  <Version>8.0.0</Version>
+	  <Version>8.0.1</Version>
 	  <Authors>XieChaoyi</Authors>
 	  <Copyright>Copyright 2023 XieChaoyi</Copyright>
 	  <Description>Aliyun MTS for Wlniao.XCore</Description>
@@ -44,7 +44,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Wlniao.Aliyun" Version="8.0.12" />
+    <PackageReference Include="Wlniao.Aliyun" Version="8.0.13" />
   </ItemGroup>
 
 </Project>
