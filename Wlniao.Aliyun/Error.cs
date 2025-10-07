@@ -9,10 +9,10 @@ namespace Wlniao.Aliyun
         /// <summary>
         /// 
         /// </summary>
-        public String errcode { get; set; }
+        public string errcode { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        public String errmsg { get; set; }
+        public string errmsg { get; set; }
     }
 }

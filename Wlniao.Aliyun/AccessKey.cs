@@ -5,8 +5,8 @@
     /// </summary>
     public class AccessKey
     {
-        private static string _KeyId = null;
-        private static string _KeySecret = null;
+        private static string _keyId = null;
+        private static string _keySecret = null;
         /// <summary>
         /// 【WLN_ALIYUN_KEYID】Access Key Id
         /// </summary>
@@ -14,16 +14,10 @@
         {
             get
             {
-                if (_KeyId == null)
-                {
-                    _KeyId = Config.GetSetting("WLN_ALIYUN_KEYID");
-                }
-                return _KeyId;
+                _keyId ??= Config.GetSetting("WLN_ALIYUN_KEYID");
+                return _keyId;
             }
-            set
-            {
-                _KeyId = value;
-            }
+            set => _keyId = value;
         }
         /// <summary>
         /// 【WLN_ALIYUN_KEYSECRET】Access Key Secret
@@ -32,16 +26,10 @@
         {
             get
             {
-                if (_KeySecret == null)
-                {
-                    _KeySecret = Config.GetSetting("WLN_ALIYUN_KEYSECRET");
-                }
-                return _KeySecret;
+                _keySecret ??= Config.GetSetting("WLN_ALIYUN_KEYSECRET");
+                return _keySecret;
             }
-            set
-            {
-                _KeySecret = value;
-            }
+            set => _keySecret = value;
         }
     }
 }

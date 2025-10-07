@@ -40,11 +40,11 @@ namespace Wlniao.Aliyun
     /// </summary>
     public class AliyunLoger : ILogProvider
     {
-        private static RegexOptions options = RegexOptions.None;
-        private static Regex regexMsgId = new Regex(@"msgid:(.+),", options);
-        private static Regex regexUseTime = new Regex(@"\[usetime:(.+)\]", options);
-        private static Regex regexUrlLink = new Regex(@"((https?|ftp|file):\/\/[\-A-Za-z0-9+&@#\/%?=~_|!:,.;]*[\-A-Za-z0-9+&@#\/%=~_|])", options);
-        private static readonly string[] levels = new string[] { "info", "warn", "debug", "error", "fatal" };
+        private const RegexOptions Options = RegexOptions.None;
+        private static readonly Regex RegexMsgId = new Regex(@"msgid:(.+),", Options);
+        private static readonly Regex RegexUseTime = new Regex(@"\[usetime:(.+)\]", Options);
+        private static readonly Regex RegexUrlLink = new Regex(@"((https?|ftp|file):\/\/[\-A-Za-z0-9+&@#\/%?=~_|!:,.;]*[\-A-Za-z0-9+&@#\/%=~_|])", Options);
+        private static readonly string[] Levels = new string[] { "info", "warn", "debug", "error", "fatal" };
         /// <summary>
         /// 日志库名称
         /// </summary>
@@ -68,21 +68,16 @@ namespace Wlniao.Aliyun
         /// <summary>
         /// 待写入数据流
         /// </summary>
-        private static Queue<LogEntrie> queue = new Queue<LogEntrie>();
-        /// <summary>
-        /// 日志输出级别
-        /// </summary>
-        private LogLevel level = Loger.LogLevel;
+        private static readonly Queue<LogEntrie> queue = new Queue<LogEntrie>();
         /// <summary>
         /// 
         /// </summary>
-        public LogLevel Level
-        {
-            get
-            {
-                return level;
-            }
-        }
+        private LogLevel level = Loger.LogLevel;
+        /// <summary>
+        /// 日志输出级别
+        /// </summary>
+        public LogLevel Level => level;
+
         /// <summary>
         /// 落盘时间间隔
         /// </summary>
@@ -142,15 +137,15 @@ namespace Wlniao.Aliyun
         /// <param name="endport">服务器接入点</param>
         /// <param name="project">日志项目名称</param>
         /// <param name="store">日志存储库名称</param>
-        /// <param name="accesskey_id">AccessKeyId</param>
-        /// <param name="accesskey_secret">AccessKeySecret</param>
+        /// <param name="accesskeyId">AccessKeyId</param>
+        /// <param name="accesskeySecret">AccessKeySecret</param>
         /// <param name="interval">落盘时间间隔（秒）</param>
-        private void NewAliyunLoger(LogLevel level = LogLevel.None, string endport = null, string project = null, string store = null, string accesskey_id = null, string accesskey_secret = null, int interval = 0)
+        private void NewAliyunLoger(LogLevel level = LogLevel.None, string endport = null, string project = null, string store = null, string accesskeyId = null, string accesskeySecret = null, int interval = 0)
         {
             this.level = level == LogLevel.None ? Loger.LogLevel : level;
-            this.Interval = this.Interval > 0 ? this.Interval : cvt.ToInt(Config.GetConfigs("WLN_LOG_INTERVAL", "3"));
-            this.AccessKeyId = string.IsNullOrEmpty(accesskey_id) ? Config.GetConfigs("WLN_LOG_KEYID", AccessKey.KeyId).TrimEnd('/') : accesskey_id;
-            this.AccessKeySecret = string.IsNullOrEmpty(accesskey_secret) ? Config.GetConfigs("WLN_LOG_KEYSECRET", AccessKey.KeySecret).TrimEnd('/') : accesskey_secret;
+            this.Interval = this.Interval > 0 ? this.Interval : Wlniao.Convert.ToInt(Config.GetConfigs("WLN_LOG_INTERVAL", "3"));
+            this.AccessKeyId = string.IsNullOrEmpty(accesskeyId) ? Config.GetConfigs("WLN_LOG_KEYID", AccessKey.KeyId).TrimEnd('/') : accesskeyId;
+            this.AccessKeySecret = string.IsNullOrEmpty(accesskeySecret) ? Config.GetConfigs("WLN_LOG_KEYSECRET", AccessKey.KeySecret).TrimEnd('/') : accesskeySecret;
             flog = new FileLoger(level);
             if (string.IsNullOrEmpty(endport))
             {
@@ -161,7 +156,7 @@ namespace Wlniao.Aliyun
                 if (string.IsNullOrEmpty(this.EndPortHost))
                 {
                     this.EndPortHost = "";
-                    Loger.Console(string.Format("{0} => {1}", DateTools.Format(), "WLN_LOG_SLS_ENDPORT not configured, please set loki server."), ConsoleColor.Red);
+                    Loger.Console($"{DateTools.Format()} => WLN_LOG_SLS_ENDPORT not configured, please set loki server.", ConsoleColor.Red);
                 }
             }
             else
@@ -170,14 +165,12 @@ namespace Wlniao.Aliyun
             }
             if (string.IsNullOrEmpty(project))
             {
-                if (this.ProjectName == null)
-                {
-                    this.ProjectName = Config.GetConfigs("WLN_LOG_SLS_PROJECT").TrimEnd('/');
-                }
+                this.ProjectName ??= Config.GetConfigs("WLN_LOG_SLS_PROJECT").TrimEnd('/');
                 if (string.IsNullOrEmpty(this.ProjectName))
                 {
                     this.ProjectName = "";
-                    Loger.Console(string.Format("{0} => {1}", DateTools.Format(), "WLN_LOG_SLS_PROJECT not configured, please set loki server."), ConsoleColor.Red);
+                    Loger.Console(
+                        $"{DateTools.Format()} => WLN_LOG_SLS_PROJECT not configured, please set loki server.", ConsoleColor.Red);
                 }
             }
             else
@@ -186,14 +179,12 @@ namespace Wlniao.Aliyun
             }
             if (string.IsNullOrEmpty(store))
             {
-                if (this.StoreName == null)
-                {
-                    this.StoreName = Config.GetConfigs("WLN_LOG_SLS_STORE").TrimEnd('/');
-                }
+                this.StoreName ??= Config.GetConfigs("WLN_LOG_SLS_STORE").TrimEnd('/');
                 if (string.IsNullOrEmpty(this.StoreName))
                 {
                     this.StoreName = "";
-                    Loger.Console(string.Format("{0} => {1}", DateTools.Format(), "WLN_LOG_SLS_STORE not configured, please set loki server."), ConsoleColor.Red);
+                    Loger.Console(
+                        $"{DateTools.Format()} => WLN_LOG_SLS_STORE not configured, please set loki server.", ConsoleColor.Red);
                 }
             }
             else
@@ -226,7 +217,10 @@ namespace Wlniao.Aliyun
                             }
                         }
                     }
-                    catch { }
+                    catch
+                    {
+                        // ignored
+                    }
                 });
                 Task.Run(() =>
                 {
@@ -245,14 +239,14 @@ namespace Wlniao.Aliyun
         /// <param name="entrie"></param>
         /// <param name="push">是否立即回写</param>
         /// <param name="level">日志写入级别</param>
-        private void Write(String topic, LogEntrie entrie, LogLevel level = LogLevel.None, bool push = false)
+        private void Write(string topic, LogEntrie entrie, LogLevel level = LogLevel.None, bool push = false)
         {
             try
             {
                 LogInfo item = null;
                 if (entrie != null && !string.IsNullOrEmpty(topic) && !string.IsNullOrEmpty(entrie.content))
                 {
-                    if (levels.Contains(topic))
+                    if (Levels.Contains(topic))
                     {
                         entrie.tags.TryAdd("level", topic);
                     }
@@ -294,34 +288,46 @@ namespace Wlniao.Aliyun
                     //catch { }
                     try
                     {
-                        foreach (Match m in regexMsgId.Matches(entrie.content))
+                        foreach (Match m in RegexMsgId.Matches(entrie.content))
                         {
                             entrie.content = entrie.content.Replace(m.Groups[0].ToString(), "").Trim();
                             entrie.tags.TryAdd("msgid", m.Groups[1].ToString());
                             break;
                         }
                     }
-                    catch { }
+                    catch
+                    {
+                        // ignored
+                    }
+
                     try
                     {
-                        foreach (Match m in regexUseTime.Matches(entrie.content))
+                        foreach (Match m in RegexUseTime.Matches(entrie.content))
                         {
                             entrie.content = entrie.content.Replace(m.Groups[0].ToString(), "").Trim();
                             entrie.tags.TryAdd("usetime", m.Groups[1].ToString());
                             break;
                         }
                     }
-                    catch { }
+                    catch
+                    {
+                        // ignored
+                    }
+
                     try
                     {
-                        foreach (Match m in regexUrlLink.Matches(entrie.content))
+                        foreach (Match m in RegexUrlLink.Matches(entrie.content))
                         {
                             entrie.content = entrie.content.Replace(m.Groups[0].ToString(), "").Trim();
                             entrie.tags.TryAdd("urlto", m.Groups[1].ToString());
                             break;
                         }
                     }
-                    catch { }
+                    catch
+                    {
+                        // ignored
+                    }
+
                     item = ConvertToDto(entrie);
                 }
                 if (push || this.Interval <= 0)
@@ -338,7 +344,7 @@ namespace Wlniao.Aliyun
                         // 实时推送时，写入当前日志流
                         dto.Logs.Add(item);
                     }
-                    lock (levels)
+                    lock (Levels)
                     {
                         for (var i = 0; i < 20 && queue.Count > 0; i++)
                         {
@@ -361,20 +367,20 @@ namespace Wlniao.Aliyun
                                  .Credential(AccessKeyId, AccessKeySecret) // 访问密钥信息                                 
                                  .Build();
                             var response = client.PostLogStoreLogsAsync(StoreName, dto).Result;
-                            if (response == null || !response.IsSuccess)
+                            if (response is not { IsSuccess: true })
                             {
                                 err = true;
                                 AliyunErrorLog("Push Result:" + response.Error.ErrorMessage);
                             }
                         }
-                        catch (Exception ex)
+                        catch (Exception e)
                         {
                             err = true;
-                            AliyunErrorLog("Exception:" + ex.Message);
+                            AliyunErrorLog("Exception:" + e.Message);
                         }
                         if (err)
                         {
-                            lock (levels)
+                            lock (Levels)
                             {
                                 foreach (var log in dto.Logs)
                                 {
@@ -411,11 +417,12 @@ namespace Wlniao.Aliyun
         /// <param name="message"></param>
         private void AliyunErrorLog(string message)
         {
-            if (message != tmpmsg)
+            if (message == tmpmsg)
             {
-                tmpmsg = message;
-                Loger.File("AliyunSLS", message, ConsoleColor.Red);
+                return;
             }
+            tmpmsg = message;
+            Loger.File("AliyunSLS", message, ConsoleColor.Red);
         }
 
         /// <summary>
@@ -445,14 +452,14 @@ namespace Wlniao.Aliyun
         /// 输出Debug级别的日志
         /// </summary>
         /// <param name="message"></param>
-        public void Debug(String message)
+        public void Debug(string message)
         {
             if (Level <= LogLevel.Debug)
             {
                 var entrie = new LogEntrie { content = message, time = DateTime.UtcNow };
                 if (Loger.LogLocal == "console")
                 {
-                    Loger.Console(string.Format("{0} => {1}", DateTools.Format(entrie.time), entrie.content), ConsoleColor.White);
+                    Loger.Console($"{DateTools.Format(entrie.time)} => {entrie.content}", ConsoleColor.White);
                 }
                 else if (Loger.LogLocal == "file")
                 {
@@ -465,14 +472,14 @@ namespace Wlniao.Aliyun
         /// 输出Info级别的日志
         /// </summary>
         /// <param name="message"></param>
-        public void Info(String message)
+        public void Info(string message)
         {
             if (Level <= LogLevel.Information)
             {
                 var entrie = new LogEntrie { content = message, time = DateTime.UtcNow };
                 if (Loger.LogLocal == "console")
                 {
-                    Loger.Console(string.Format("{0} => {1}", DateTools.Format(entrie.time), entrie.content), ConsoleColor.Gray);
+                    Loger.Console($"{DateTools.Format(entrie.time)} => {entrie.content}", ConsoleColor.Gray);
                 }
                 else if (Loger.LogLocal == "file")
                 {
@@ -486,14 +493,14 @@ namespace Wlniao.Aliyun
         /// 输出Warn级别的日志
         /// </summary>
         /// <param name="message"></param>
-        public void Warn(String message)
+        public void Warn(string message)
         {
             if (Level <= LogLevel.Warning)
             {
                 var entrie = new LogEntrie { content = message, time = DateTime.UtcNow };
                 if (Loger.LogLocal == "console")
                 {
-                    Loger.Console(string.Format("{0} => {1}", DateTools.Format(entrie.time), entrie.content), ConsoleColor.DarkYellow);
+                    Loger.Console($"{DateTools.Format(entrie.time)} => {entrie.content}", ConsoleColor.DarkYellow);
                 }
                 else if (Loger.LogLocal == "file")
                 {
@@ -507,14 +514,14 @@ namespace Wlniao.Aliyun
         /// 输出Error级别的日志
         /// </summary>
         /// <param name="message"></param>
-        public void Error(String message)
+        public void Error(string message)
         {
             if (Level <= LogLevel.Error)
             {
                 var entrie = new LogEntrie { content = message, time = DateTime.UtcNow };
                 if (Loger.LogLocal == "console")
                 {
-                    Loger.Console(string.Format("{0} => {1}", DateTools.Format(entrie.time), entrie.content), ConsoleColor.Red);
+                    Loger.Console($"{DateTools.Format(entrie.time)} => {entrie.content}", ConsoleColor.Red);
                 }
                 else if (Loger.LogLocal == "file")
                 {
@@ -528,14 +535,14 @@ namespace Wlniao.Aliyun
         /// 输出Fatal级别的日志
         /// </summary>
         /// <param name="message"></param>
-        public void Fatal(String message)
+        public void Fatal(string message)
         {
             if (Level <= LogLevel.Critical)
             {
                 var entrie = new LogEntrie { content = message, time = DateTime.UtcNow };
                 if (Loger.LogLocal == "console")
                 {
-                    Loger.Console(string.Format("{0} => {1}", DateTools.Format(entrie.time), entrie.content), ConsoleColor.Magenta);
+                    Loger.Console($"{DateTools.Format(entrie.time)} => {entrie.content}", ConsoleColor.Magenta);
                 }
                 else if (Loger.LogLocal == "file")
                 {
@@ -552,7 +559,7 @@ namespace Wlniao.Aliyun
         /// <param name="message"></param>
         /// <param name="logLevel"></param>
         /// <param name="consoleLocal"></param>
-        public void Topic(String topic, String message, LogLevel logLevel, Boolean consoleLocal = true)
+        public void Topic(string topic, string message, LogLevel logLevel, bool consoleLocal = true)
         {
             var entrie = new LogEntrie { content = message, time = DateTime.UtcNow };
             if (consoleLocal && Level <= logLevel)
@@ -580,7 +587,7 @@ namespace Wlniao.Aliyun
                     {
                         color = ConsoleColor.Magenta;
                     }
-                    Loger.Console(string.Format("{0} => {1}", DateTools.Format(entrie.time), entrie.content), color);
+                    Loger.Console($"{DateTools.Format(entrie.time)} => {entrie.content}", color);
                 }
                 else if (Loger.LogLocal == "file")
                 {

@@ -89,7 +89,7 @@ namespace Wlniao.Aliyun
 
             _ctx.StatusCode = responseMessage.StatusCode;
             _ctx.HttpResponseBody = task.Result;
-            _ctx.HttpResponseString = System.Text.UTF8Encoding.UTF8.GetString(_ctx.HttpResponseBody);
+            _ctx.HttpResponseString = System.Text.Encoding.UTF8.GetString(_ctx.HttpResponseBody);
             _ctx.HttpResponseHeaders = new Dictionary<string, string>();
             var status = (int)_ctx.StatusCode;
             if (status >= 200 && status < 300)

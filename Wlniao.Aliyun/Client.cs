@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Wlniao.Text;
 
 namespace Wlniao.Aliyun
 {
@@ -39,7 +40,7 @@ namespace Wlniao.Aliyun
         /// <summary>
         /// 
         /// </summary>
-        public Client(String KeyId, String KeySecret)
+        public Client(string KeyId, string KeySecret)
         {
             this.KeyId = KeyId;
             this.KeySecret = KeySecret;
@@ -90,14 +91,14 @@ namespace Wlniao.Aliyun
                 if (ctx.Response is Error)
                 {
                     var err = (Error)ctx.Response;
-                    return Task<ApiResult<TResponse>>.Run(() =>
+                    return Task.Run(() =>
                     {
                         return new ApiResult<TResponse>() { success = false, message = err.errmsg, code = err.errcode };
                     });
                 }
                 else
                 {
-                    return Task<ApiResult<TResponse>>.Run(() =>
+                    return Task.Run(() =>
                     {
                         return new ApiResult<TResponse>() { success = true, message = "error", data = (TResponse)ctx.Response };
                     });
@@ -131,7 +132,7 @@ namespace Wlniao.Aliyun
         /// <param name="ApiPath"></param>
         /// <param name="kvs"></param>
         /// <returns></returns>
-        public String PublicGet(String ApiHost, String ApiPath, params KeyValuePair<String, String>[] kvs)
+        public string PublicGet(string ApiHost, string ApiPath, params KeyValuePair<string, string>[] kvs)
         {
             if (string.IsNullOrEmpty(this.KeyId))
             {
@@ -149,7 +150,7 @@ namespace Wlniao.Aliyun
                 ctx.RequestHost = ApiHost;
                 ctx.RequestPath = ApiPath;
                 ctx.Method = System.Net.Http.HttpMethod.Get;
-                ctx.Parameters = new Dictionary<String, String>();
+                ctx.Parameters = new Dictionary<string, string>();
                 if (kvs != null)
                 {
                     foreach (var kv in kvs)
@@ -176,7 +177,7 @@ namespace Wlniao.Aliyun
                         {
                             sb.Append("&");
                         }
-                        sb.Append(kv.Key + "=" + strUtil.UrlEncode(kv.Value));
+                        sb.Append(kv.Key + "=" + StringUtil.UrlEncode(kv.Value));
                     }
                 }
                 ctx.HttpRequestString = sb.ToString();
@@ -198,7 +199,7 @@ namespace Wlniao.Aliyun
         /// <param name="ApiPath"></param>
         /// <param name="kvs"></param>
         /// <returns></returns>
-        public String PublicPost(String ApiHost, String ApiPath, params KeyValuePair<String, String>[] kvs)
+        public string PublicPost(string ApiHost, string ApiPath, params KeyValuePair<string, string>[] kvs)
         {
             if (string.IsNullOrEmpty(this.KeyId))
             {
@@ -216,7 +217,7 @@ namespace Wlniao.Aliyun
                 ctx.RequestHost = ApiHost;
                 ctx.RequestPath = ApiPath;
                 ctx.Method = System.Net.Http.HttpMethod.Post;
-                ctx.Parameters = new Dictionary<String, String>();
+                ctx.Parameters = new Dictionary<string, string>();
                 if (kvs != null)
                 {
                     foreach (var kv in kvs)
@@ -243,7 +244,7 @@ namespace Wlniao.Aliyun
                         {
                             sb.Append("&");
                         }
-                        sb.Append(kv.Key + "=" + strUtil.UrlEncode(kv.Value));
+                        sb.Append(kv.Key + "=" + StringUtil.UrlEncode(kv.Value));
                     }
                 }
                 ctx.HttpRequestString = sb.ToString();
@@ -266,7 +267,7 @@ namespace Wlniao.Aliyun
         /// <param name="Content"></param>
         /// <param name="kvs"></param>
         /// <returns></returns>
-        public String PublicPost(String ApiHost, String ApiPath, String Content, params KeyValuePair<String, String>[] kvs)
+        public string PublicPost(string ApiHost, string ApiPath, string Content, params KeyValuePair<string, string>[] kvs)
         {
             if (string.IsNullOrEmpty(this.KeyId))
             {
@@ -284,7 +285,7 @@ namespace Wlniao.Aliyun
                 ctx.RequestHost = ApiHost;
                 ctx.RequestPath = ApiPath;
                 ctx.Method = System.Net.Http.HttpMethod.Post;
-                ctx.Parameters = new Dictionary<String, String>();
+                ctx.Parameters = new Dictionary<string, string>();
                 if (kvs != null)
                 {
                     foreach (var kv in kvs)
@@ -311,7 +312,7 @@ namespace Wlniao.Aliyun
                         {
                             sb.Append("&");
                         }
-                        sb.Append(kv.Key + "=" + strUtil.UrlEncode(kv.Value));
+                        sb.Append(kv.Key + "=" + StringUtil.UrlEncode(kv.Value));
                     }
                 }
                 if (ctx.RequestPath.IndexOf('?') > 0)
@@ -342,7 +343,7 @@ namespace Wlniao.Aliyun
         /// <param name="Content"></param>
         /// <param name="kvs"></param>
         /// <returns></returns>
-        public String PublicPost(String ApiHost, String ApiPath, byte[] Content, params KeyValuePair<String, String>[] kvs)
+        public string PublicPost(string ApiHost, string ApiPath, byte[] Content, params KeyValuePair<string, string>[] kvs)
         {
             if (string.IsNullOrEmpty(this.KeyId))
             {
@@ -360,7 +361,7 @@ namespace Wlniao.Aliyun
                 ctx.RequestHost = ApiHost;
                 ctx.RequestPath = ApiPath;
                 ctx.Method = System.Net.Http.HttpMethod.Post;
-                ctx.Parameters = new Dictionary<String, String>();
+                ctx.Parameters = new Dictionary<string, string>();
                 if (kvs != null)
                 {
                     foreach (var kv in kvs)
@@ -387,7 +388,7 @@ namespace Wlniao.Aliyun
                         {
                             sb.Append("&");
                         }
-                        sb.Append(kv.Key + "=" + strUtil.UrlEncode(kv.Value));
+                        sb.Append(kv.Key + "=" + StringUtil.UrlEncode(kv.Value));
                     }
                 }
                 if (ctx.RequestPath.IndexOf('?') > 0)
@@ -421,7 +422,7 @@ namespace Wlniao.Aliyun
         {
             var keys = ctx.Parameters.Keys.ToList();
             var values = new System.Text.StringBuilder();
-            keys.Sort(delegate (String small, String big) { return string.Compare(small, big, StringComparison.Ordinal); });
+            keys.Sort(delegate (string small, string big) { return string.Compare(small, big, StringComparison.Ordinal); });
             foreach (var key in keys)
             {
                 if (!string.IsNullOrEmpty(ctx.Parameters[key]))
@@ -430,10 +431,10 @@ namespace Wlniao.Aliyun
                     {
                         values.Append("&");
                     }
-                    values.Append(key + "=" + strUtil.UrlEncode(ctx.Parameters[key]));
+                    values.Append(key + "=" + StringUtil.UrlEncode(ctx.Parameters[key]));
                 }
             }
-            var text = ctx.Method.ToString() + "&%2F&" + strUtil.UrlEncode(values.ToString());
+            var text = ctx.Method.ToString() + "&%2F&" + StringUtil.UrlEncode(values.ToString());
             var hmac = new System.Security.Cryptography.HMACSHA1(System.Text.Encoding.ASCII.GetBytes(ctx.KeySecret + "&"));
             var hashValue = hmac.ComputeHash(System.Text.Encoding.ASCII.GetBytes(text));
             var signature = System.Convert.ToBase64String(hashValue);

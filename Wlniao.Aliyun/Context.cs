@@ -58,15 +58,15 @@ namespace Wlniao.Aliyun
         /// <summary>
         /// 请求的Headers参数
         /// </summary>
-        public Dictionary<String, String> HttpRequestHeaders;
+        public Dictionary<string, string> HttpRequestHeaders;
         /// <summary>
         /// 输出的Headers参数
         /// </summary>
-        public Dictionary<String, String> HttpResponseHeaders;
+        public Dictionary<string, string> HttpResponseHeaders;
         /// <summary>
         /// 基础参数
         /// </summary>
-        public Dictionary<String, String> Parameters { get; set; }
+        public Dictionary<string, string> Parameters { get; set; }
         /// <summary>
         /// 请求的内容
         /// </summary>
