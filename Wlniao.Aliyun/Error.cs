@@ -4,7 +4,7 @@ namespace Wlniao.Aliyun
     /// <summary>
     /// 
     /// </summary>
-    public class Error : Wlniao.Handler.IResponse
+    public class Error
     {
         /// <summary>
         /// 

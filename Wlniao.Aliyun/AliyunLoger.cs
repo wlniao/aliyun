@@ -97,12 +97,12 @@ namespace Wlniao.Aliyun
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="accesskey_id">AccessKeyId</param>
-        /// <param name="accesskey_secret">AccessKeySecret</param>
+        /// <param name="accesskeyId">AccessKeyId</param>
+        /// <param name="accesskeySecret">AccessKeySecret</param>
         /// <param name="interval">落盘时间间隔（秒）</param>
-        public AliyunLoger(string accesskey_id = null, string accesskey_secret = null, int interval = 0)
+        public AliyunLoger(string accesskeyId = null, string accesskeySecret = null, int interval = 0)
         {
-            NewAliyunLoger(LogLevel.None, null, null, null, accesskey_id, accesskey_secret, interval);
+            NewAliyunLoger(LogLevel.None, null, null, null, accesskeyId, accesskeySecret, interval);
         }
         /// <summary>
         /// 
@@ -123,12 +123,12 @@ namespace Wlniao.Aliyun
         /// <param name="endport">服务器接入点</param>
         /// <param name="project">日志项目名称</param>
         /// <param name="store">日志存储库名称</param>
-        /// <param name="accesskey_id">AccessKeyId</param>
-        /// <param name="accesskey_secret">AccessKeySecret</param>
+        /// <param name="accesskeyId">AccessKeyId</param>
+        /// <param name="accesskeySecret">AccessKeySecret</param>
         /// <param name="interval">落盘时间间隔（秒）</param>
-        public AliyunLoger(LogLevel level = LogLevel.None, string endport = null, string project = null, string store = null, string accesskey_id = null, string accesskey_secret = null, int interval = 0)
+        public AliyunLoger(LogLevel level = LogLevel.None, string endport = null, string project = null, string store = null, string accesskeyId = null, string accesskeySecret = null, int interval = 0)
         {
-            NewAliyunLoger(level, endport, project, store, accesskey_id, accesskey_secret, interval);
+            NewAliyunLoger(level, endport, project, store, accesskeyId, accesskeySecret, interval);
         }
         /// <summary>
         /// 

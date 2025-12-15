@@ -10,7 +10,7 @@ namespace Wlniao.Aliyun
     /// <summary>
     /// 阿里云API客户端
     /// </summary>
-    public class Client : Wlniao.Handler.IClient
+    public class Client
     {
         /// <summary>
         /// 阿里云AccessKeyId
@@ -57,20 +57,20 @@ namespace Wlniao.Aliyun
         /// <param name="method"></param>
         /// <returns></returns>
         protected Task<ApiResult<TResponse>> CallAsync<TRequest, TResponse>(string operation, TRequest request, System.Net.Http.HttpMethod method)
-            where TResponse : Wlniao.Handler.IResponse, new()
-            where TRequest : Wlniao.Handler.IRequest
         {
             if (request == null)
             {
                 throw new ArgumentNullException();
             }
 
-            var ctx = new Context();
-            ctx.KeyId = KeyId;
-            ctx.KeySecret = KeySecret;
-            ctx.Method = method == null ? System.Net.Http.HttpMethod.Get : method;
-            ctx.Operation = operation;
-            ctx.Request = request;
+            var ctx = new Context
+            {
+                KeyId = KeyId,
+                KeySecret = KeySecret,
+                Method = method == null ? System.Net.Http.HttpMethod.Get : method,
+                Operation = operation,
+                Request = request
+            };
 
             handler.HandleBefore(ctx);
             if (ctx.Response == null)
@@ -78,9 +78,8 @@ namespace Wlniao.Aliyun
                 return ctx.HttpTask.ContinueWith((t) =>
                 {
                     handler.HandleAfter(ctx);
-                    if (ctx.Response is Error)
+                    if (ctx.Response is Error err)
                     {
-                        var err = (Error)ctx.Response;
                         return new ApiResult<TResponse>() { success = false, message = err.errmsg, code = err.errcode };
                     }
                     return new ApiResult<TResponse>() { success = true, message = "success", data = (TResponse)ctx.Response };
@@ -91,10 +90,7 @@ namespace Wlniao.Aliyun
                 if (ctx.Response is Error)
                 {
                     var err = (Error)ctx.Response;
-                    return Task.Run(() =>
-                    {
-                        return new ApiResult<TResponse>() { success = false, message = err.errmsg, code = err.errcode };
-                    });
+                    return Task.Run(() => new ApiResult<TResponse>() { success = false, message = err.errmsg, code = err.errcode });
                 }
                 else
                 {

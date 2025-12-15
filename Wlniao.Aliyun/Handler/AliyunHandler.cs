@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Wlniao.Handler;
 namespace Wlniao.Aliyun
 {
     /// <summary>

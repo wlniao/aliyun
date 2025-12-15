@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Wlniao.Handler;
 
 namespace Wlniao.Aliyun
 {
     /// <summary>
     /// 请求线程
     /// </summary>
-    public class Context : Wlniao.Handler.IContext
+    public class Context : Wlniao.Aliyun.IContext
     {
         /// <summary>
         /// AccessKeyId
@@ -38,11 +37,11 @@ namespace Wlniao.Aliyun
         /// <summary>
         /// 要发送的请求内容
         /// </summary>
-        public Wlniao.Handler.IRequest Request { get; set; }
+        public object Request { get; set; }
         /// <summary>
         /// API的输出内容
         /// </summary>
-        public Wlniao.Handler.IResponse Response { get; set; }
+        public object Response { get; set; }
         /// <summary>
         /// 
         /// </summary>
