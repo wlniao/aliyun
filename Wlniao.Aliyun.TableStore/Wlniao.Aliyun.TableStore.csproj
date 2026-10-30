@@ -1,10 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <Description>TableStore Extend by Wlniao</Description>
     <Copyright>Copyright 2019 XieChaoyi</Copyright>
     <Authors>Wlniao</Authors>
-    <TargetFrameworks>net8.0;net7.0;net6.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
     <AssemblyName>Wlniao.Aliyun.TableStore</AssemblyName>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
@@ -20,8 +20,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Wlniao.Aliyun" Version="8.0.13" />
-    <PackageReference Include="Wlniao.XCore" Version="8.0.52" />
-    <PackageReference Include="Aliyun.TableStore" Version="1.1.0" />
+    <PackageReference Include="Wlniao.XCore" Version="8.1.1-beta" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Wlniao.Aliyun.Test" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Wlniao.Aliyun\Wlniao.Aliyun.csproj" />
   </ItemGroup>
 </Project>

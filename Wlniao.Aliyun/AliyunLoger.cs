@@ -1,4 +1,4 @@
-﻿/*==============================================================================
+/*==============================================================================
     文件名称：AliyunLoger.cs
     适用环境：CoreCLR 5.0,.NET Framework 2.0/4.0/5.0
     功能描述：基于Aliyun SLS服务的日志写入工具
@@ -19,11 +19,6 @@
     limitations under the License.
 
 ===============================================================================*/
-using Aliyun.Api.LogService;
-using Aliyun.Api.LogService.Domain.Log;
-using Aliyun.Api.LogService.Domain.LogStore.Index;
-using Aliyun.Api.LogService.Infrastructure.Serialization.Protobuf;
-using Google.Protobuf.WellKnownTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -198,22 +193,14 @@ namespace Wlniao.Aliyun
                 {
                     try
                     {
-                        var client = LogServiceClientBuilders.HttpBuilder.RequestTimeout(2000) //设置每次请求超时时间
-                             .Endpoint(EndPortHost, ProjectName) // 服务入口及项目名
-                             .Credential(AccessKeyId, AccessKeySecret) // 访问密钥信息                                 
-                             .Build();
-                        var resQuery = client.GetLogStoreAsync(StoreName, ProjectName).Result;
-                        if (!resQuery.IsSuccess && resQuery.Error != null && resQuery.Error.ErrorCode != null && resQuery.Error.ErrorCode.Code == "LogStoreNotExist")
+                        var client = new SlsClient(EndPortHost, ProjectName, AccessKeyId, AccessKeySecret);
+                        var resQuery = client.GetLogStoreAsync(StoreName).Result;
+                        if (!resQuery.IsSuccess && resQuery.Error != null && resQuery.Error.Code == "LogStoreNotExist")
                         {
-                            var createStore = client.CreateLogStoreAsync(StoreName, 30, 1, ProjectName).Result;
+                            var createStore = client.CreateLogStoreAsync(StoreName, 30, 1).Result;
                             if (createStore.IsSuccess)
                             {
-                                var keys = new Dictionary<string, IndexKeyInfo>();
-                                keys.TryAdd("level", new IndexKeyInfo("text") { });
-                                keys.TryAdd("topic", new IndexKeyInfo("text") { });
-                                keys.TryAdd("msgid", new IndexKeyInfo("text") { });
-                                keys.TryAdd("urlto", new IndexKeyInfo("text") { });
-                                client.CreateIndexAsync(StoreName, new IndexLineInfo(new char[0]), ProjectName).GetAwaiter();
+                                client.CreateIndexAsync(StoreName).GetAwaiter().GetResult();
                             }
                         }
                     }
@@ -243,7 +230,7 @@ namespace Wlniao.Aliyun
         {
             try
             {
-                LogInfo item = null;
+                SlsLog item = null;
                 if (entrie != null && !string.IsNullOrEmpty(topic) && !string.IsNullOrEmpty(entrie.content))
                 {
                     if (Levels.Contains(topic))
@@ -332,9 +319,9 @@ namespace Wlniao.Aliyun
                 }
                 if (push || this.Interval <= 0)
                 {
-                    var dto = new LogGroupInfo
+                    var dto = new SlsLogGroup
                     {
-                        Logs = new List<LogInfo>(),
+                        Logs = new List<SlsLog>(),
                         Topic = "",
                         Source = XCore.WebNode,
                         LogTags = new Dictionary<string, string>()
@@ -362,15 +349,12 @@ namespace Wlniao.Aliyun
                         var err = false;
                         try
                         {
-                            var client = LogServiceClientBuilders.HttpBuilder.RequestTimeout(2000) //设置每次请求超时时间
-                                 .Endpoint(EndPortHost, ProjectName) // 服务入口及项目名
-                                 .Credential(AccessKeyId, AccessKeySecret) // 访问密钥信息                                 
-                                 .Build();
+                            var client = new SlsClient(EndPortHost, ProjectName, AccessKeyId, AccessKeySecret);
                             var response = client.PostLogStoreLogsAsync(StoreName, dto).Result;
                             if (response is not { IsSuccess: true })
                             {
                                 err = true;
-                                AliyunErrorLog("Push Result:" + response.Error.ErrorMessage);
+                                AliyunErrorLog("Push Result:" + response.Error.Message);
                             }
                         }
                         catch (Exception e)
@@ -385,7 +369,7 @@ namespace Wlniao.Aliyun
                                 foreach (var log in dto.Logs)
                                 {
                                     //失败时把待写入数据全部放入队列
-                                    queue.Enqueue(new LogEntrie { tags = log.Contents, time = log.Time.DateTime, content = log.Contents["body"] });
+                                    queue.Enqueue(new LogEntrie { tags = log.Contents, time = log.Time, content = log.Contents["body"] });
                                 }
                             }
                         }
@@ -430,9 +414,9 @@ namespace Wlniao.Aliyun
         /// </summary>
         /// <param name="entrie"></param>
         /// <returns></returns>
-        private LogInfo ConvertToDto(LogEntrie entrie)
+        private SlsLog ConvertToDto(LogEntrie entrie)
         {            
-            var dto = new LogInfo
+            var dto = new SlsLog
             {
                 Time = entrie.time,
                 Contents = entrie.tags

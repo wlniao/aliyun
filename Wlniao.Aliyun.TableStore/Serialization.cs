@@ -1,4 +1,4 @@
-﻿/*==============================================================================
+/*==============================================================================
     文件名称：SwithCaseExtend.cs
     适用环境：CoreCLR 5.0,.NET Framework 2.0/4.0/5.0
     功能描述：switch/case组扩展
@@ -30,8 +30,6 @@
 ===============================================================================*/
 
 using System;
-using Aliyun.TableStore.Response;
-using Aliyun.TableStore.DataModel;
 using System.Collections.Generic;
 
 namespace Wlniao.Aliyun.TableStore

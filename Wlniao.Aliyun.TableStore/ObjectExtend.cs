@@ -1,4 +1,4 @@
-﻿/*==============================================================================
+/*==============================================================================
     文件名称：SwithCaseExtend.cs
     适用环境：CoreCLR 5.0,.NET Framework 2.0/4.0/5.0
     功能描述：switch/case组扩展
@@ -30,7 +30,7 @@
 ===============================================================================*/
 
 using System;
-using Aliyun.TableStore.DataModel;
+using Wlniao.Log;
 namespace Wlniao.Aliyun.TableStore
 {
     /// <summary>
@@ -48,7 +48,7 @@ namespace Wlniao.Aliyun.TableStore
         {
             if (val.Type == ColumnValueType.Integer)
             {
-                Wlniao.Runtime.Reflection.SetPropertyValue(input, key, val.IntegerValue);
+                SetColumnValue(input, key, val.IntegerValue);
             }
             else if (val.Type == ColumnValueType.String)
             {
@@ -56,19 +56,41 @@ namespace Wlniao.Aliyun.TableStore
                 {
                     throw new EmptyPrimaryKeyException();
                 }
-                Wlniao.Runtime.Reflection.SetPropertyValue(input, key, val.StringValue);
+                SetColumnValue(input, key, val.StringValue);
             }
             else if (val.Type == ColumnValueType.Double)
             {
-                Wlniao.Runtime.Reflection.SetPropertyValue(input, key, val.DoubleValue);
+                SetColumnValue(input, key, val.DoubleValue);
             }
             else if (val.Type == ColumnValueType.Boolean)
             {
-                Wlniao.Runtime.Reflection.SetPropertyValue(input, key, val.BooleanValue);
+                SetColumnValue(input, key, val.BooleanValue);
             }
             else if (val.Type == ColumnValueType.Binary)
             {
-                Wlniao.Runtime.Reflection.SetPropertyValue(input, key, val.BinaryValue);
+                SetColumnValue(input, key, val.BinaryValue);
+            }
+        }
+
+        private static void SetColumnValue(object input, string key, object value)
+        {
+            var property = input.GetType().GetProperty(key);
+            if (property == null)
+            {
+                return;
+            }
+            try
+            {
+                if (value != null && !property.PropertyType.IsInstanceOfType(value))
+                {
+                    value = System.Convert.ChangeType(value, property.PropertyType);
+                }
+                property.SetValue(input, value);
+            }
+            catch (Exception)
+            {
+                // 列值无法转换到属性类型时忽略该列，保持单列不匹配不中断整行映射的行为
+                Loger.Error("SetColumnValue failed, property:" + key);
             }
         }
     }

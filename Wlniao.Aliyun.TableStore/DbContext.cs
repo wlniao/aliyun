@@ -19,13 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Aliyun.TableStore;
-using Aliyun.TableStore.Request;
-using Aliyun.TableStore.DataModel;
 using System.Reflection;
-using Aliyun.TableStore.DataModel.Search;
-using Aliyun.TableStore.DataModel.Search.Sort;
-using Aliyun.TableStore.DataModel.Search.Query;
 using Wlniao.Log;
 
 namespace Wlniao.Aliyun.TableStore
@@ -56,8 +50,6 @@ namespace Wlniao.Aliyun.TableStore
         {
             var watch = Stopwatch.StartNew();
             OtsConfig = config;
-            OtsConfig.OTSDebugLogHandler = null;
-            OtsConfig.OTSErrorLogHandler = null;
             var client = new OTSClient(config);
             var resListTable = client.ListTable(new ListTableRequest());
             foreach (var table in resListTable.TableNames)
@@ -91,8 +83,6 @@ namespace Wlniao.Aliyun.TableStore
                         tableKey.Add(table, resDescribeTable.TableMeta.PrimaryKeySchema);
                     }
                 }
-                OtsConfig.OTSDebugLogHandler = null;
-                OtsConfig.OTSErrorLogHandler = null;
                 watch.Stop();
                 Console.WriteLine("Ots Init: " + watch.Elapsed);
                 #region 尝试使用内网链接地址
@@ -106,8 +96,6 @@ namespace Wlniao.Aliyun.TableStore
                         foreach (var table in tmpListTable.TableNames)
                         {
                             OtsConfig = tmp;
-                            OtsConfig.OTSDebugLogHandler = null;
-                            OtsConfig.OTSErrorLogHandler = null;
                             return;
                         }
                     });
@@ -147,7 +135,7 @@ namespace Wlniao.Aliyun.TableStore
 
 #region 分析表结构
             var pkSchema = new PrimaryKeySchema();
-            foreach (PropertyInfo info in Wlniao.Runtime.Reflection.GetPropertyList(type))
+            foreach (PropertyInfo info in type.GetRuntimeProperties())
             {
                 if (info.GetCustomAttribute(typeof(System.ComponentModel.DataAnnotations.KeyAttribute)) == null)
                 {
@@ -208,7 +196,7 @@ namespace Wlniao.Aliyun.TableStore
                     // 生成查询索引
                     var reqCreateSearchIndex = new CreateSearchIndexRequest(name, name);
                     var fieldSchemas = new List<FieldSchema>();
-                    foreach (PropertyInfo info in Wlniao.Runtime.Reflection.GetPropertyList(type))
+                    foreach (PropertyInfo info in type.GetRuntimeProperties())
                     {
                         if (info.GetCustomAttribute(typeof(System.ComponentModel.DataAnnotations.CompareAttribute)) == null)
                         {
@@ -216,24 +204,24 @@ namespace Wlniao.Aliyun.TableStore
                         }
                         else if (info.PropertyType == typeof(int) || info.PropertyType == typeof(long))
                         {
-                            fieldSchemas.Add(new FieldSchema(info.Name, FieldType.LONG) { index = true });
+                            fieldSchemas.Add(new FieldSchema(info.Name, FieldType.LONG) { Index = true });
                         }
                         else if (info.PropertyType == typeof(string))
                         {
-                            fieldSchemas.Add(new FieldSchema(info.Name, FieldType.TEXT) { index = true });
+                            fieldSchemas.Add(new FieldSchema(info.Name, FieldType.TEXT) { Index = true });
                         }
                         else if (info.PropertyType == typeof(double))
                         {
-                            fieldSchemas.Add(new FieldSchema(info.Name, FieldType.DOUBLE) { index = true });
+                            fieldSchemas.Add(new FieldSchema(info.Name, FieldType.DOUBLE) { Index = true });
                         }
                         else if (info.PropertyType == typeof(bool))
                         {
-                            fieldSchemas.Add(new FieldSchema(info.Name, FieldType.BOOLEAN) { index = true });
+                            fieldSchemas.Add(new FieldSchema(info.Name, FieldType.BOOLEAN) { Index = true });
                         }
                     };
                     if (fieldSchemas.Count > 0)
                     {
-                        reqCreateSearchIndex.IndexSchame = new IndexSchema() { FieldSchemas = fieldSchemas };
+                        reqCreateSearchIndex.IndexSchema = new IndexSchema() { FieldSchemas = fieldSchemas };
                         client.CreateSearchIndex(reqCreateSearchIndex);
                         Loger.Info("Create table succeeded, table name:" + name);
                     }
@@ -317,7 +305,7 @@ namespace Wlniao.Aliyun.TableStore
 
             var keys = new PrimaryKey();
             var columns = new AttributeColumns();
-            foreach (PropertyInfo info in Wlniao.Runtime.Reflection.GetPropertyList(type))
+            foreach (PropertyInfo info in type.GetRuntimeProperties())
             {
                 var methodInfo = info.GetGetMethod();
                 if (methodInfo == null || methodInfo.IsStatic || !methodInfo.IsPublic)
@@ -401,7 +389,7 @@ namespace Wlniao.Aliyun.TableStore
 
             var keys = new PrimaryKey();
             var columns = new AttributeColumns();
-            foreach (PropertyInfo info in Wlniao.Runtime.Reflection.GetPropertyList(type))
+            foreach (PropertyInfo info in type.GetRuntimeProperties())
             {
                 var methodInfo = info.GetGetMethod();
                 if (methodInfo == null || methodInfo.IsStatic || !methodInfo.IsPublic)
@@ -484,7 +472,7 @@ namespace Wlniao.Aliyun.TableStore
 
             var keys = new PrimaryKey();
             var columns = new UpdateOfAttribute();
-            foreach (PropertyInfo info in Wlniao.Runtime.Reflection.GetPropertyList(type))
+            foreach (PropertyInfo info in type.GetRuntimeProperties())
             {
                 var methodInfo = info.GetGetMethod();
                 if (methodInfo == null || methodInfo.IsStatic || !methodInfo.IsPublic)

@@ -1,4 +1,4 @@
-﻿/*==============================================================================
+/*==============================================================================
     文件名称：EmptyPrimaryKeyException.cs
     适用环境：CoreCLR 5.0,.NET Framework 2.0/4.0/5.0
     功能描述：获取的数据主键为空时触发异常
@@ -21,13 +21,12 @@
 ===============================================================================*/
 
 using System;
-using Aliyun.TableStore.DataModel;
 namespace Wlniao.Aliyun.TableStore
 {
     /// <summary>
     /// 
     /// </summary>
-    public class EmptyPrimaryKeyException : global::Aliyun.TableStore.OTSException
+    public class EmptyPrimaryKeyException : OTSException
     {
     }
 }

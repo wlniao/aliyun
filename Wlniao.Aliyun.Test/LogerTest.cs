@@ -1,6 +1,3 @@
-using Aliyun.Api.LogService;
-using Aliyun.Api.LogService.Domain.Log;
-
 namespace Wlniao.Loger.Test
 {
     [TestClass]
@@ -10,7 +7,8 @@ namespace Wlniao.Loger.Test
         public void TestMethod1()
         {
             Wlniao.Log.Loger.SetLogger(new Wlniao.Aliyun.AliyunLoger());
-            Wlniao.Log.Loger.Topic("test", DateTools.Format());
+            Assert.IsInstanceOfType(Wlniao.Log.Loger.LogProvider, typeof(Wlniao.Aliyun.AliyunLoger));
+            Wlniao.Log.Loger.Topic("test", DateTools.Format() + " - ok");
             System.Threading.Thread.Sleep(1000);
             Wlniao.Log.Loger.Topic("test", DateTools.Format());
             System.Threading.Thread.Sleep(1000);
@@ -24,8 +22,6 @@ namespace Wlniao.Loger.Test
             System.Threading.Thread.Sleep(1000);
             Wlniao.Log.Loger.Fatal(DateTools.Format());
             System.Threading.Thread.Sleep(1000);
-
-            Assert.IsTrue(true);
         }
     }
 }
