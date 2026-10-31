@@ -10,20 +10,29 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <PackageId>Wlniao.Aliyun.TableStore</PackageId>
-    <Version>0.0.6</Version>
+    <Version>0.1.0</Version>
     <RootNamespace>Wlniao.Aliyun.TableStore</RootNamespace>
     <PackageOutputPath>$(HOMEDRIVE)$(HOMEPATH)\.nuget</PackageOutputPath>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0.html</PackageLicenseUrl>
-    <PackageIconUrl>https://static.wlniao.com/wlniao/logo.png</PackageIconUrl>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://www.wlniao.com/xcore/mongo</PackageProjectUrl>
+		<PackageIcon>wlniao.png</PackageIcon>
   </PropertyGroup>
 
+
+	<ItemGroup>
+		<None Include="..\wlniao.png">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+		<None Include="..\Wlniao.Aliyun\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+  
   <ItemGroup>
-    <PackageReference Include="Wlniao.XCore" Version="8.1.1-beta" />
-  </ItemGroup>
-  <ItemGroup>
-    <InternalsVisibleTo Include="Wlniao.Aliyun.Test" />
+    <PackageReference Include="Wlniao.XCore" Version="10.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Wlniao.Aliyun\Wlniao.Aliyun.csproj" />
